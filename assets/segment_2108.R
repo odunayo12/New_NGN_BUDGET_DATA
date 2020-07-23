@@ -2,7 +2,7 @@
 #pipe: Ctrl+shift+m
 #comment: Ctrl+shift+c
 library(tidyverse)
-library(rtools)
+
 #list_of_MDA_Codes <- tableOfContent$Code
 
 data_pbi <- read_csv(
