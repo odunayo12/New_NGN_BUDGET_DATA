@@ -16,7 +16,11 @@ proj_2019_MDA_Clean <- proj_2019_MDA %>%
   fill(table_identifier, table_identifier_MDA) %>%
   filter(!is.na(projectCode)) %>%
   select(-Column1, -Column2) %>%
+<<<<<<< HEAD
   # TODO Complete the table's  561 NA's via length(which(is.na(proj_2019_MDA_Clean$table_identifier))) missing values
+=======
+  # TODO Complete the table 561 via length(which(is.na(proj_2019_MDA_Clean$table_identifier))) missing values
+>>>>>>> 6201d866a5969848ae56b913a324d065a6fb87fa
   mutate(table_identifier = if_else(
     #detects the rows which do not start with 0 and their lenght is not exactl 10
     str_detect(table_identifier, "^0", negate = T) &
