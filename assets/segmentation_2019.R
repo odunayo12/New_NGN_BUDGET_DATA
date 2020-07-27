@@ -23,7 +23,7 @@ data_pbi_2019_start <- data_pbi_2019 %>%
   mutate(
     subCostCenterSum_Code = case_when(
       #dectects any figure from 0-9 in a column
-      str_detect(Data.Column2, "[0-9]") &
+      str_detect(Data.Column2, "^[0-9]") &
         str_length(Data.Column2) == 9 ~ paste0('0', Data.Column2)
     ),
     #the following detects the apperance of "ERGP" strictly () once {1}

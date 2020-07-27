@@ -33,7 +33,11 @@ tbl2018_extract = tabula.convert_into(
     tbl2018, 'tbl2018_extract.csv',   lattice=True,  output_format="csv", pages="all")
 tbl2020_extract = tabula.convert_into(
     tbl2020, 'tbl2020_extract.csv', output_format='csv', lattice=True)
-
+# %%
+# this works
+tbl2020_extract = tabula.convert_into(
+    "C:/Users/rotim/OneDrive - bwedu/Data Project/BudgetData/PDF_Data/2020_Executive_Budget_Proposal.pdf", 'tbl2018_extract.csv', stream=True,
+    output_format="csv", pages="all")
 # %%
 pdf_2020 = tabula.read_pdf(tbl2020, multiple_tables=True)
 
