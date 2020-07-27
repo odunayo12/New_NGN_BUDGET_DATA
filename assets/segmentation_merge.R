@@ -53,7 +53,7 @@ summary_by_MDA  <-
   select(Year,  Data.Column3:Data.Column8) %>% 
   rename(MDA = Data.Column3, Personnel = Data.Column4, Overhead = Data.Column5, Recurrent = Data.Column6, Capital = Data.Column7, totalAllocation = Data.Column8)
 
-write_csv(summary_by_sub_MDA,
+write_csv(summary_by_MDA,
           'Data/finished_sets/csv_/summary_by_MDA_18_19_20.csv')
 
 #overview by sub_MDAs
