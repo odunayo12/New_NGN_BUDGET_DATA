@@ -6,6 +6,7 @@
 *.xlsx
 *.txt
 *.csv
+.env
 *.pdf
 /Data
 /other_Years
