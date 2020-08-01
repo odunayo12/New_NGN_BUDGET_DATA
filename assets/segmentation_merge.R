@@ -40,18 +40,21 @@ write_csv(projects_18_19_20,
 #overview by MDAs
 summary_by_MDA  <-
   budget_18_19_20 %>% filter(
-    !is.na(Data.Column3)  &
-      !is.na(Data.Column4) &
-      !is.na(Data.Column5) &
-      !is.na(Data.Column6) &
-      !is.na(Data.Column7) & !is.na(Data.Column8),
-    str_detect(Data.Column3, "^(MDA){1}", negate = T),
-    !is.na(Data.Column2),
-    #note the difference between summary_by_MDA and summary_by_sub_MDA lies in the use of !
-    is.na(subCostCenterSum_Code)
+    str_length(Data.Column2) == 3 &
+      !is.na(Data.Column4)
+    # !is.na(Data.Column3)  &
+    #   !is.na(Data.Column4) &
+    #   !is.na(Data.Column5) &
+    #   !is.na(Data.Column6) &
+    #   !is.na(Data.Column7) & !is.na(Data.Column8),
+    # str_detect(Data.Column3, "^(MDA){1}", negate = T),
+    # !is.na(Data.Column2),
+    # #note the difference between summary_by_MDA and summary_by_sub_MDA lies in the use of !
+    # is.na(subCostCenterSum_Code)
   )%>% 
-  select(Year,  Data.Column3:Data.Column8) %>% 
-  rename(MDA = Data.Column3, Personnel = Data.Column4, Overhead = Data.Column5, Recurrent = Data.Column6, Capital = Data.Column7, totalAllocation = Data.Column8)
+  mutate(subCostCenterSum_Code = str_c("0", Data.Column2)) %>% 
+  select(Year,  subCostCenterSum_Code, Data.Column3:Data.Column8) %>% 
+  rename(MDA = Data.Column3, Personnel = Data.Column4, Overhead = Data.Column5, Recurrent = Data.Column6, Capital = Data.Column7, totalAllocation = Data.Column8) 
 
 write_csv(summary_by_MDA,
           'Data/finished_sets/csv_/summary_by_MDA_18_19_20.csv')
@@ -69,7 +72,7 @@ summary_by_sub_MDA  <-
     !is.na(subCostCenterSum_Code)
   )%>% 
   select(Year, subCostCenterSum_Code,  Data.Column3:Data.Column8) %>% 
-  rename(MDA = Data.Column3, Personnel = Data.Column4, Overhead = Data.Column5, Recurrent = Data.Column6, Capital = Data.Column7, totalAllocation = Data.Column8)
+  rename(MDA = Data.Column3, Personnel = Data.Column4, Overhead = Data.Column5, Recurrent = Data.Column6, Capital = Data.Column7, totalAllocation = Data.Column8) 
 
 write_csv(summary_by_sub_MDA,
           'Data/finished_sets/csv_/summary_by_sub_MDA_18_19_20.csv')
@@ -77,3 +80,7 @@ write_csv(summary_by_sub_MDA,
 #   filter(table_identifier_MDA == "OFFICE OF THE CHIEF OF STAFF TO THE PRESIDENT") %>%
 #   group_by(Year, table_identifier, table_identifier_MDA) %>%
 #   arrange(projectCode, Year)
+wweee_check <- budget_18_19_20 %>% filter(
+  str_length(Data.Column2) == 3 &
+    !is.na(Data.Column4)
+) %>% filter(Year == 2019)
