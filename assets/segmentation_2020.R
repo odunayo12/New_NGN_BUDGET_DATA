@@ -87,3 +87,12 @@ data_pbi_2020_start <- data_pbi_2020 %>%
     lineExpCodeLevel3
   ) %>%
   select(-Name, -Kind)
+
+
+check_data_pbi_2020 <- data_pbi_2020_start %>% 
+  filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>% 
+  mutate(Amount = if_else(is.na(Data.Column3),  as.numeric(str_replace_all(Data.Column4, ",", "")),  as.numeric(str_replace_all(Data.Column3, ",", "")))) %>% 
+  #filter(table_identifier == "0111001002") %>% 
+  group_by(costCenter_Code, lineExpTermLevel1) %>% 
+  summarise(totalAllocation = sum(Amount)) %>%  
+  pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation)

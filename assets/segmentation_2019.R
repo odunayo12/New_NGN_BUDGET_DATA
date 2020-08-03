@@ -88,3 +88,8 @@ data_pbi_2019_start <- data_pbi_2019 %>%
     lineExpCodeLevel3
   ) %>%
   select(-Name, -Kind)
+
+
+check_data_pbi_2019 <- data_pbi_2019_start %>% 
+  #filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>% 
+  mutate(Amount =  as.numeric(str_replace_all(Data.Column4, ",", "")))

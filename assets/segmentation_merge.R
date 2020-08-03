@@ -81,6 +81,11 @@ write_csv(summary_by_sub_MDA,
 #   group_by(Year, table_identifier, table_identifier_MDA) %>%
 #   arrange(projectCode, Year)
 wweee_check <- budget_18_19_20 %>% filter(
-  str_length(Data.Column2) == 3 &
-    !is.na(Data.Column4)
-) %>% filter(Year == 2019)
+    !is.na(lineExpTermLevel4)
+) %>% filter(Year == 2018) %>% 
+  select(Year, table_identifier:lineExpTermLevel4, Data.Column2, Data.Column3 ) %>% 
+  mutate(AMount = as.numeric(str_replace_all(Data.Column3, ",", ""))) %>% 
+  filter(table_identifier == "0111001001") %>% 
+  group_by(table_identifier) %>% 
+  summarise(sum(AMount))
+         
