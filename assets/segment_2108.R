@@ -41,6 +41,7 @@ data_pbi_2018 <-
     subCostCenterSum_Code = case_when(
       #dectects any figure from 0-9 in a column
       str_detect(Data.Column2, "^[0-9]") &
+        str_detect(Data.Column2, "\\,", negate = TRUE) &
         str_length(Data.Column2) == 9 ~ paste0('0', Data.Column2)
     ),
     #the following detects the apperance of "ERGP" strictly () once {1}
@@ -120,4 +121,7 @@ check_data_pbi_2018 <- data_pbi_2018 %>%
   )) %>%
   group_by(costCenter_Code, lineExpTermLevel1) %>%
   summarise(totalAllocation = sum(Amount)) %>%
-  pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation)
+  pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>% 
+  replace(is.na(.), 0) %>%
+  #summarise_all(funs(sum))
+  mutate(budgetTotal = `CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`)
