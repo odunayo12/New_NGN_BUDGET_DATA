@@ -5,6 +5,8 @@ library(tidyverse)
 
 #list_of_MDA_Codes <- tableOfContent$Code
 
+# Data Import -------------------------------------------------------------
+
 data_pbi <- read_csv(
   "Data/Raw/data_pbi_2018.csv",
   col_types = cols(
@@ -19,11 +21,22 @@ data_pbi <- read_csv(
   )
 )
 
+# Cleaning ----------------------------------------------------------------
+
+
 #in what follows we separate by page in the name column to extract the last page numbers at the end of the Name column
 
 data_pbi_2018 <-
   data_pbi %>%
   arrange(Id, Data.Column1) %>%
+  add_row(
+    Id = "Table1519",
+    Name = "Table1519 (Page 1914-1915)",
+    Kind = "Table",
+    Data.Column1 = "543001001",
+    Data.Column2 = "NATIONAL POPULATION COMMISSION",
+    .before = 35464
+  ) %>%
   mutate(
     subCostCenterSum_Code = case_when(
       #dectects any figure from 0-9 in a column
@@ -43,9 +56,10 @@ data_pbi_2018 <-
       str_detect(Data.Column1, "^[0-9]") &
         is.na(Data.Column3) &
         is.na(Data.Column4) &
-        is.na(Data.Column5)  ~ paste0('0', Data.Column1)
+        is.na(Data.Column5)  ~ paste0('0', Data.Column1),
+      !is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
     ),
-    table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)
+    table_identifier_MDA = if_else(subCostCenterSum_Code==table_identifier, Data.Column3, case_when(!is.na(table_identifier) ~ Data.Column2))
   ) %>%
   # we then fill the sucessive rows downwards
   fill(table_identifier, table_identifier_MDA) %>%
@@ -92,7 +106,10 @@ data_pbi_2018 <-
   ) %>%
   select(-Name, -Kind)
 
-write_csv(data_pbi_2018, "Data/semi_finished/budget_2018.csv")
+#write_csv(data_pbi_2018, "Data/semi_finished/budget_2018.csv")
+
+# checks ------------------------------------------------------------------
+
 
 check_data_pbi_2018 <- data_pbi_2018 %>%
   filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%

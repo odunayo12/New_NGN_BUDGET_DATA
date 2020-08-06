@@ -1,3 +1,8 @@
+library(tidyverse)
+
+
+# Data Import -------------------------------------------------------------
+
 data_pbi_2020 <-
   read_csv(
     "Data/Raw/data_pbi_2020.csv",
@@ -18,13 +23,34 @@ data_pbi_2020 <-
   )
 View(data_pbi_2020)
 
+
+# Cleaning ----------------------------------------------------------------
+
 data_pbi_2020_start <- data_pbi_2020 %>%
   arrange(Id, Data.Column1) %>%
+  #the table headings 242001001 and 344001001 are missing from the data but their table contents are in the data
+  #so we add the table headings by mimmicking the pattern as shown for the rest tables 
+  add_row(
+    Id = "Table1080",
+    Name = "Table1080 (Page 1136-1137)",
+    Kind = "Table",
+    Data.Column1 = "242001001",
+    Data.Column2 = "NATIONAL SALARIES, INCOMES AND WAGES COMMISSION",
+    .before = 6846
+  ) %>%
+  add_row(
+    Id = "Table1240",
+    Name = "Table1240 (Page 1234-1235)",
+    Kind = "Table",
+    Data.Column1 = "344001001",
+    Data.Column2 = "CODE OF CONDUCT BUREAU",
+    .before = 11493
+  ) %>%
   mutate(
-    SN = str_c("0", row_number()),
     subCostCenterSum_Code = case_when(
       #dectects any figure from 0-9 in a column
-      str_detect(Data.Column2, "^[0-9]") & str_detect(Data.Column2, "\\,", negate = TRUE) &
+      str_detect(Data.Column2, "^[0-9]") &
+        str_detect(Data.Column2, "\\,", negate = TRUE) &
         str_length(Data.Column2) == 9 ~ paste0('0', Data.Column2)
     ),
     #the following detects the apperance of "ERGP" strictly () once {1}
@@ -36,16 +62,16 @@ data_pbi_2020_start <- data_pbi_2020 %>%
         str_detect(Data.Column2, "[A-Z]") ~ Data.Column1
     ),
     #here we choose to identify relevant tables by their starting codes which in most cases only have two columns thus the sucessuive columns will be empty
-    table_identifier = 
+    table_identifier =
       case_when(
-      str_detect(Data.Column1, "^[0-9]") &
-        is.na(Data.Column3) &
-        is.na(Data.Column4) &
-        is.na(Data.Column5)  ~ paste0('0', Data.Column1) #,
-      #!is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
-    ) #subCostCenterSum_Code
+        str_detect(Data.Column1, "^[0-9]") &
+          is.na(Data.Column3) &
+          is.na(Data.Column4) &
+          is.na(Data.Column5)  ~ paste0('0', Data.Column1) ,
+        !is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
+      ) #subCostCenterSum_Code
     ,
-    table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)
+    table_identifier_MDA = if_else(subCostCenterSum_Code==table_identifier,Data.Column3,case_when(!is.na(table_identifier) ~ Data.Column2))
   ) %>%
   # we then fill the sucessive rows downwards
   fill(table_identifier, table_identifier_MDA) %>%
@@ -90,14 +116,29 @@ data_pbi_2020_start <- data_pbi_2020 %>%
     lineExpTermLevel3,
     lineExpCodeLevel3
   ) %>%
-  select(-Name, -Kind) #%>% 
-  slice(40500:n())
+  select(-Name, -Kind) #%>%
+  filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4))
+#%>%
+slice(40500:n())
 
 # write_csv(data_pbi_2020_start,
 #           'Data/finished_sets/csv_/data_pbi_2020_start.csv')
-# 
+#
 # write_csv(data_pbi_2020_start,
 #           'Data/finished_sets/csv_/data_pbi_2020_start_2.csv')
+#           
+finshed_2020 <- data_pbi_2020_start %>%
+filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
+  mutate(Amount = if_else(
+    is.na(Data.Column3),
+    as.numeric(str_replace_all(Data.Column4, ",", "")),
+    as.numeric(str_replace_all(Data.Column3, ",", ""))
+  )) %>%
+  select(-(Id:projectCode))
+
+# wertz -------------------------------------------------------------------
+
+  
 
 check_data_pbi_2020 <- data_pbi_2020_start %>%
   filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
