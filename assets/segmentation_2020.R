@@ -21,6 +21,7 @@ View(data_pbi_2020)
 data_pbi_2020_start <- data_pbi_2020 %>%
   arrange(Id, Data.Column1) %>%
   mutate(
+    SN = str_c("0", row_number()),
     subCostCenterSum_Code = case_when(
       #dectects any figure from 0-9 in a column
       str_detect(Data.Column2, "^[0-9]") & str_detect(Data.Column2, "\\,", negate = TRUE) &
@@ -40,8 +41,8 @@ data_pbi_2020_start <- data_pbi_2020 %>%
       str_detect(Data.Column1, "^[0-9]") &
         is.na(Data.Column3) &
         is.na(Data.Column4) &
-        is.na(Data.Column5)  ~ paste0('0', Data.Column1),
-      !is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
+        is.na(Data.Column5)  ~ paste0('0', Data.Column1) #,
+      #!is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
     ) #subCostCenterSum_Code
     ,
     table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)

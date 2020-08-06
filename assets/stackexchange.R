@@ -127,3 +127,32 @@ tibble(data = df.1) %>%
   spread(name, data)
 names(df.1)
 library(zoo)
+
+
+
+
+
+#https://stackoverflow.com/questions/1269624/how-to-get-row-from-r-data-frame/63281174#63281174
+library(tidyverse)
+x <- structure(list(A = c(5,    3.5, 3.25, 4.25,  1.5 ), 
+                    B = c(4.25, 4,   4,    4.5,   4.5 ),
+                    C = c(4.5,  2.5, 4,    2.25,  3   )
+),
+.Names    = c("A", "B", "C"),
+class     = "data.frame",
+row.names = c(NA, -5L)
+)
+
+x
+
+y<-c(A=5, B=4.25, C=4.5)
+y
+
+#The slice() verb allows one to subset data row-wise. 
+x <- x %>% slice(1) #(n) for nth row, or (i:n) for range i to n, (i:n()) for i to bottom
+
+x
+
+#Test that the items in the row match the vector you wanted
+x[1,]==y
+
