@@ -86,7 +86,4 @@ for (i in seq_along(pdfurls)) {
 }
 
 
-#setwd("C:/Users/rotim/OneDrive - bwedu/Data Project/BudgetData/other_Years/2012/") ##
-infiles <- Sys.glob("/other_Years/2012/*.pdf") ##
-outfile <- "2012.pdf" ##
-system(paste("pdftk", paste(infiles, collapse = " "), "cat output", outfile))
+
