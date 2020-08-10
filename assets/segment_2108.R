@@ -45,6 +45,14 @@ data_pbi_2018 <-
     Data.Column2 = "NATIONAL YOUTH SERVICE CORPS (NYSC)",
     .before = 7157
   ) %>%
+  add_row(
+    Id = "Table1070",
+    Name = "Table1070 (Page 1245-1246)",
+    Kind = "Table",
+    Data.Column1 = "517005001",
+    Data.Column2 = "JOINT ADMISSIONS MATRICULATION BOARD",
+    .before = 7568
+  ) %>%
   mutate(
     subCostCenterSum_Code = case_when(
       #dectects any figure from 0-9 in a column
@@ -68,7 +76,11 @@ data_pbi_2018 <-
         is.na(Data.Column5)  ~ paste0('0', Data.Column1),
       !is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
     ),
-    table_identifier_MDA = if_else(subCostCenterSum_Code==table_identifier, Data.Column3, case_when(!is.na(table_identifier) ~ Data.Column2))
+    table_identifier_MDA = if_else(
+      subCostCenterSum_Code == table_identifier,
+      Data.Column3,
+      case_when(!is.na(table_identifier) ~ Data.Column2)
+    )
   ) %>%
   # we then fill the sucessive rows downwards
   fill(table_identifier, table_identifier_MDA) %>%
@@ -129,13 +141,17 @@ check_data_pbi_2018 <- data_pbi_2018 %>%
   )) %>%
   group_by(costCenter_Code, lineExpTermLevel1) %>%
   summarise(totalAllocation = sum(Amount)) %>%
-  pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>% 
+  pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>%
   replace(is.na(.), 0) %>%
   #summarise_all(funs(sum))
-  mutate(budgetTotal = format((`CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`), big.mark = ",", nsmall = 1))
+  mutate(budgetTotal = format((`CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`),
+                              big.mark = ",",
+                              nsmall = 1
+  ))
 
 check_data <- function(requiredData) {
-  requiredD <- requiredData %>% filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
+  requiredD <-
+    requiredData %>% filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
     mutate(Amount = if_else(
       is.na(Data.Column3),
       as.numeric(str_replace_all(Data.Column4, ",", "")),
@@ -144,8 +160,8 @@ check_data <- function(requiredData) {
     group_by(costCenter_Code, lineExpTermLevel1) %>%
     summarise(totalAllocation = sum(Amount)) %>%
     pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation)
-  #destination <-str_extract(requiredData, "")  
-  # destination  <- str_c("check_", fileName, ".csv")  
+  #destination <-str_extract(requiredData, "")
+  # destination  <- str_c("check_", fileName, ".csv")
   #write.csv(fileName, str_c("check_", fileName, ".csv"))
   return(requiredD)
 }
