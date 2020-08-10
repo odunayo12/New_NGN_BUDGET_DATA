@@ -29,7 +29,7 @@ View(data_pbi_2020)
 data_pbi_2020_start <- data_pbi_2020 %>%
   arrange(Id, Data.Column1) %>%
   #the table headings 242001001 and 344001001 are missing from the data but their table contents are in the data
-  #so we add the table headings by mimmicking the pattern as shown for the rest tables 
+  #so we add the table headings by mimmicking the pattern as shown for the rest tables
   add_row(
     Id = "Table1080",
     Name = "Table1080 (Page 1136-1137)",
@@ -71,7 +71,11 @@ data_pbi_2020_start <- data_pbi_2020 %>%
         !is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
       ) #subCostCenterSum_Code
     ,
-    table_identifier_MDA = if_else(subCostCenterSum_Code==table_identifier,Data.Column3,case_when(!is.na(table_identifier) ~ Data.Column2))
+    table_identifier_MDA = if_else(
+      subCostCenterSum_Code == table_identifier,
+      Data.Column3,
+      case_when(!is.na(table_identifier) ~ Data.Column2)
+    )
   ) %>%
   # we then fill the sucessive rows downwards
   fill(table_identifier, table_identifier_MDA) %>%
@@ -117,7 +121,7 @@ data_pbi_2020_start <- data_pbi_2020 %>%
     lineExpCodeLevel3
   ) %>%
   select(-Name, -Kind) #%>%
-  filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4))
+filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4))
 #%>%
 slice(40500:n())
 
@@ -126,9 +130,9 @@ slice(40500:n())
 #
 # write_csv(data_pbi_2020_start,
 #           'Data/finished_sets/csv_/data_pbi_2020_start_2.csv')
-#           
+#
 finshed_2020 <- data_pbi_2020_start %>%
-filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
+  filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
   mutate(Amount = if_else(
     is.na(Data.Column3),
     as.numeric(str_replace_all(Data.Column4, ",", "")),
@@ -138,7 +142,7 @@ filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
 
 # wertz -------------------------------------------------------------------
 
-  
+
 
 check_data_pbi_2020 <- data_pbi_2020_start %>%
   filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
