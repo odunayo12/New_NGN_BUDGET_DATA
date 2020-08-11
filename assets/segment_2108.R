@@ -29,6 +29,7 @@ data_pbi <- read_csv(
 data_pbi_2018 <-
   data_pbi %>%
   arrange(Id, Data.Column1) %>%
+  # mutate() %>% 
   add_row(
     Id = "Table1519",
     Name = "Table1519 (Page 1914-1915)",
@@ -43,7 +44,7 @@ data_pbi_2018 <-
     Kind = "Table",
     Data.Column1 = "513003001",
     Data.Column2 = "NATIONAL YOUTH SERVICE CORPS (NYSC)",
-    .before = 7157
+    .before = 7156
   ) %>%
   add_row(
     Id = "Table1070",
@@ -51,9 +52,10 @@ data_pbi_2018 <-
     Kind = "Table",
     Data.Column1 = "517005001",
     Data.Column2 = "JOINT ADMISSIONS MATRICULATION BOARD",
-    .before = 7568
+    .before = 8520
   ) %>%
   mutate(
+    SN = row_number(),
     subCostCenterSum_Code = case_when(
       #dectects any figure from 0-9 in a column
       str_detect(Data.Column2, "^[0-9]") &
