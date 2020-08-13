@@ -23,7 +23,7 @@ data_pbi <- read_csv(
 
 # Cleaning ----------------------------------------------------------------
 
-
+#You have to use one of the previous versions on Github to get the EGRP Projects. The version that led to the completion before finishing the 2019 version.
 #in what follows we separate by page in the name column to extract the last page numbers at the end of the Name column
 
 data_pbi_2018 <-
@@ -53,6 +53,30 @@ data_pbi_2018 <-
     Data.Column1 = "517005001",
     Data.Column2 = "JOINT ADMISSIONS MATRICULATION BOARD",
     .before = 8520
+  ) %>%
+  add_row(
+    Id = "Table1511",
+    Name = "Table1511 (Page 1905-1906)",
+    Kind = "Table",
+    Data.Column1 = "535016001",
+    Data.Column2 = "NATIONAL ENVIRONMENTAL STANDARDS AND REGULATIONS ENFORCEMENT AGENCY",
+    .before = 35158
+  ) %>%
+  add_row(
+    Id = "Table1341",
+    Name = "Table1341 (Page 1679-1680)",
+    Kind = "Table",
+    Data.Column1 = "521005001",
+    Data.Column2 = "NATIONAL ARBOVIRUS AND VECTOR RESEARCH",
+    .before = 26582
+  ) %>%
+  add_row(
+    Id = "Table1350",
+    Name = "Table1350 (Page 1692)",
+    Kind = "Table",
+    Data.Column1 = "521012001",
+    Data.Column2 = "PHARMACIST COUNCIL OF NIGERIA COUNCIL",
+    .before = 27062
   ) %>%
   mutate(
     SN = row_number(),
@@ -129,7 +153,7 @@ data_pbi_2018 <-
   ) %>%
   select(-Name, -Kind)
 
-write_csv(data_pbi_2018, "Data/semi_finished/budget_2018.csv")
+#write_csv(data_pbi_2018, "Data/semi_finished/budget_2018.csv")
 
 # checks ------------------------------------------------------------------
 
