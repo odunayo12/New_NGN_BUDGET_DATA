@@ -2,7 +2,7 @@
 #pipe: Ctrl+shift+m
 #comment: Ctrl+shift+c
 library(tidyverse)
-
+# TODO 2020 is Missing about 1,000 projects, fix them.
 #list_of_MDA_Codes <- tableOfContent$Code
 
 # Data Import -------------------------------------------------------------
@@ -29,7 +29,7 @@ data_pbi <- read_csv(
 data_pbi_2018 <-
   data_pbi %>%
   arrange(Id, Data.Column1) %>%
-  # mutate() %>% 
+  # mutate() %>%
   add_row(
     Id = "Table1519",
     Name = "Table1519 (Page 1914-1915)",
@@ -77,6 +77,22 @@ data_pbi_2018 <-
     Data.Column1 = "521012001",
     Data.Column2 = "PHARMACIST COUNCIL OF NIGERIA COUNCIL",
     .before = 27062
+  ) %>%
+  add_row(
+    Id = "Table1370",
+    Name = "Table1370 (Page 1721)",
+    Kind = "Table",
+    Data.Column1 = "521026005",
+    Data.Column2 = "UNIVERSITY OF BENIN TEACHING HOSPITAL",
+    .before = 28183
+  ) %>%
+  add_row(
+    Id = "Table1380",
+    Name = "Table1380 (Page 1735-1736)",
+    Kind = "Table",
+    Data.Column1 = "521026013",
+    Data.Column2 = "AMINU KANO UNIVERSITY TEACHING HOSPITAL",
+    .before = 28721
   ) %>%
   mutate(
     SN = row_number(),
