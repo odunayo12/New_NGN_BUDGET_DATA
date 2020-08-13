@@ -94,6 +94,14 @@ data_pbi_2018 <-
     Data.Column2 = "AMINU KANO UNIVERSITY TEACHING HOSPITAL",
     .before = 28721
   ) %>%
+  add_row(
+    Id = "Table1390",
+    Name = "Table1390 (Page 1748-1749)",
+    Kind = "Table",
+    Data.Column1 = "521027001",
+    Data.Column2 = "IRRUA SPECIALIST TEACHING HOSPITAL,",
+    .before = 29212
+  ) %>%
   mutate(
     SN = row_number(),
     subCostCenterSum_Code = case_when(
