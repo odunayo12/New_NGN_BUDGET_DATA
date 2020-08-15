@@ -99,8 +99,32 @@ data_pbi_2018 <-
     Name = "Table1390 (Page 1748-1749)",
     Kind = "Table",
     Data.Column1 = "521027001",
-    Data.Column2 = "IRRUA SPECIALIST TEACHING HOSPITAL,",
+    Data.Column2 = "IRRUA SPECIALIST TEACHING HOSPITAL",
     .before = 29212
+  ) %>%
+  add_row(
+    Id = "Table1410",
+    Name = "Table1410 (Page 1778-1779)",
+    Kind = "Table",
+    Data.Column1 = "521027016",
+    Data.Column2 = "NATIONAL TB AND LEPROSY REFERRED HOSPITAL AND TRAINING, ZARIA",
+    .before = 30345
+  ) %>%
+  add_row(
+    Id = "Table1430",
+    Name = "Table1430 (Page 1801-1802)",
+    Kind = "Table",
+    Data.Column1 = "521027033",
+    Data.Column2 = "FEDERAL MEDICAL CENTRE, KEBBI STATE",
+    .before = 31344
+  ) %>%
+  add_row(
+    Id = "Table1440",
+    Name = "able1440 (Page 1817-1818)",
+    Kind = "Table",
+    Data.Column1 = "521027041",
+    Data.Column2 = "INTERCOUNTRY CENTRE FOR ORAL HEALTH JOS",
+    .before = 31932
   ) %>%
   mutate(
     SN = row_number(),
