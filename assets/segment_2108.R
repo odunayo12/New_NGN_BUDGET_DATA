@@ -120,11 +120,51 @@ data_pbi_2018 <-
   ) %>%
   add_row(
     Id = "Table1440",
-    Name = "able1440 (Page 1817-1818)",
+    Name = "Table1440 (Page 1817-1818)",
     Kind = "Table",
     Data.Column1 = "521027041",
     Data.Column2 = "INTERCOUNTRY CENTRE FOR ORAL HEALTH JOS",
     .before = 31932
+  ) %>%
+  add_row(
+    Id = "Table1470",
+    Name = "Table1470 (Page 1850-1851)",
+    Kind = "Table",
+    Data.Column1 = "521034001",
+    Data.Column2 = "MEDICAL LAB. SCIENCE COUNCIL OF NIGERIA, YABA",
+    .before = 32984
+  ) %>%
+  add_row(
+    Id = "Table1480",
+    Name = "Table1480 (Page 1868)",
+    Kind = "Table",
+    Data.Column1 = "521049001",
+    Data.Column2 = "NATIONAL HOSPITAL",
+    .before = 33632
+  ) %>%
+  add_row(
+    Id = "Table1360",
+    Name = "Table1360 (Page 1708)",
+    Kind = "Table",
+    Data.Column1 = "521022001",
+    Data.Column2 = "NATIONAL POST GRADUATE MEDICAL COLLEGE OF NIGERIA-IJANIKIN LAGOS",
+    .before = 27667
+  ) %>%
+  add_row(
+    Id = "Table1450",
+    Name = "Table1450 (Page 1828)",
+    Kind = "Table",
+    Data.Column1 = "521029011",
+    Data.Column2 = "PHS, IBADAN",
+    .before = 32363
+  ) %>%
+  add_row(
+    Id = "Table1460",
+    Name = "Table1460 (Page 1838)",
+    Kind = "Table",
+    Data.Column1 = "521029012",
+    Data.Column2 = "PHS, ABEOKUTA",
+    .before = 32587
   ) %>%
   mutate(
     SN = row_number(),
