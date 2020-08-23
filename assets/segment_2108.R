@@ -26,6 +26,8 @@ data_pbi <- read_csv(
 #You have to use one of the previous versions on Github to get the EGRP Projects. The version that led to the completion before finishing the 2019 version.
 #in what follows we separate by page in the name column to extract the last page numbers at the end of the Name column
 
+
+
 data_pbi_2018 <-
   data_pbi %>%
   arrange(Id, Data.Column1) %>%
@@ -165,6 +167,72 @@ data_pbi_2018 <-
     Data.Column1 = "521029012",
     Data.Column2 = "PHS, ABEOKUTA",
     .before = 32587
+  ) %>%
+  #Table1090, 1,608,207,117| 6,140,534,238| 2,707,892,484| 332,040,722|1,542,878,441|11,167,659,024|9,607,649,775|5,454,566,912 |544,950,246|742,364,652|590,845,725|290,160,881|575,392,092|534,230,381|352,703,348|403,904,627|247,340,582|413,459,855|428,708,224|365,604,666|1,734,588,286|||||| NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT
+  #stop table1300
+  add_row(
+    Id = "Table1090",
+    Name = "Table1090 (Page 1270-1271)",
+    Kind = "Table",
+    Data.Column1 = "517016001",
+    Data.Column2 = "NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT",
+    .before = 9581
+  ) %>%
+  add_row(
+    Id = "Table1110",
+    Name = "Table1110 (Page 1301)",
+    Kind = "Table",
+    Data.Column1 = "517018014",
+    Data.Column2 = "FEDERAL POLYTECHNIC OKO",
+    .before = 10780
+  ) %>%
+  add_row(
+    Id = "Table1100",
+    Name = "Table1100 (Page 1284-1285)",
+    Kind = "Table",
+    Data.Column1 = "517018005",
+    Data.Column2 = "FEDERAL POLYTECHNIC KAURA-NAMODA",
+    .before = 10155
+  ) %>%
+  add_row(
+    Id = "Table1120",
+    Name = "Table1120 (Page 1320-1321)",
+    Kind = "Table",
+    Data.Column1 = "517018024",
+    Data.Column2 = "NATIONAL INSTITUTE FOR CONSTRUCTION TECHNOLOGY UROMI, EDO STATE",
+    .before = 11567
+  ) %>%
+  add_row(
+    Id = "Table1140",
+    Name = "Table1140 (Page 1355-1356)",
+    Kind = "Table",
+    Data.Column1 = "517019018",
+    Data.Column2 = "FEDERAL COLLEGE OF EDUCATION YOLA",
+    .before = 13035
+  ) %>%
+  add_row(
+    Id = "Table1150",
+    Name = "Table1150 (Page 1371-1372)",
+    Kind = "Table",
+    Data.Column1 = "517021005",
+    Data.Column2 = "OBAFEMI AWOLOWO UNIVERSITY",
+    .before = 13644
+  ) %>%
+  add_row(
+    Id = "Table1170",
+    Name = "Table1170 (Page 1395-1396)",
+    Kind = "Table",
+    Data.Column1 = "517021022",
+    Data.Column2 = "NNAMDI AZIKIWE UNIVERSITY, AWKA",
+    .before = 14569
+  ) %>%
+  add_row(
+    Id = "Table1200",
+    Name = "Table1200 (Page 1435)",
+    Kind = "Table",
+    Data.Column1 = "517024001",
+    Data.Column2 = "NATIONAL OPEN UNIVERSITY",
+    .before = 16181
   ) %>%
   mutate(
     SN = row_number(),
