@@ -168,8 +168,6 @@ data_pbi_2018 <-
     Data.Column2 = "PHS, ABEOKUTA",
     .before = 32587
   ) %>%
-  #Table1090, 1,608,207,117| 6,140,534,238| 2,707,892,484| 332,040,722|1,542,878,441|11,167,659,024|9,607,649,775|5,454,566,912 |544,950,246|742,364,652|590,845,725|290,160,881|575,392,092|534,230,381|352,703,348|403,904,627|247,340,582|413,459,855|428,708,224|365,604,666|1,734,588,286|||||| NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT
-  #stop table1300
   add_row(
     Id = "Table1090",
     Name = "Table1090 (Page 1270-1271)",
@@ -234,6 +232,75 @@ data_pbi_2018 <-
     Data.Column2 = "NATIONAL OPEN UNIVERSITY",
     .before = 16181
   ) %>%
+  add_row(
+    Id = "Table1180",
+    Name = "Table1180 (Page 1405-1406)",
+    Kind = "Table",
+    Data.Column1 = "517021028",
+    Data.Column2 = "NATIONAL INSTITUE FOR NIGERIAN LANGUAGES",
+    .before = 	14985
+  ) %>%
+  add_row(
+    Id = "Table1210",
+    Name = "Table1210 (Page 1453-1454)",
+    Kind = "Table",
+    Data.Column1 = "517026008",
+    Data.Column2 = "FGC IJANIKIN",
+    .before = 	16913
+  ) %>%
+  add_row(
+    Id = "Table1220",
+    Name = "Table1220 (Page 1471-1472)",
+    Kind = "Table",
+    Data.Column1 = "517026017",
+    Data.Column2 = "FGC KEFFI",
+    .before = 	17685
+  ) %>%
+  add_row(
+    Id = "Table1230",
+    Name = "Table1230 (Page 1490-1491)",
+    Kind = "Table",
+    Data.Column1 = "517026026",
+    Data.Column2 = "FGC OGOJA",
+    .before = 	18480
+  ) %>%
+  add_row(
+    Id = "Table1240",
+    Name = "Table1240 (Page 1513-1514)",
+    Kind = "Table",
+    Data.Column1 = "517026036",
+    Data.Column2 = "FGC WARRI",
+    .before = 	19440
+  ) %>%
+  #Table1090, 1,608,207,117| 6,140,534,238| 2,707,892,484| 332,040,722|1,542,878,441|11,167,659,024|9,607,649,775|5,454,566,912 |544,950,246|742,364,652|590,845,725|290,160,881|575,392,092|534,230,381|352,703,348|403,904,627|247,340,582|413,459,855|428,708,224|365,604,666|1,734,588,286|||||| NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT
+  #stop table1300
+  add_row(
+    Id = "Table1250",
+    Name = "Table1250 (Page 1529-1530)",
+    Kind = "Table",
+    Data.Column1 = "517026043",
+    Data.Column2 = "FGGC AKURE",
+    .before = 	20067
+  ) %>%
+  add_row(
+    Id = "Table1260",
+    Name = "Table1260 (Page 1547-1548)",
+    Kind = "Table",
+    Data.Column1 = "517026052",
+    Data.Column2 = "FGGC EFON ALAYE",
+    .before = 	20873
+  ) %>%
+  add_row(
+    Id = "Table1270",
+    Name = "Table1270 (Page 1565-1566)",
+    Kind = "Table",
+    Data.Column1 = "517026061",
+    Data.Column2 = "FGGC IKOT-OBIO-ITONG",
+    .before = 	21716
+  ) %>%
+# mutate ------------------------------------------------------------------
+
+  
   mutate(
     SN = row_number(),
     subCostCenterSum_Code = case_when(
