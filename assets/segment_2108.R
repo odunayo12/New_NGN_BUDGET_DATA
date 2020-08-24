@@ -1,8 +1,5 @@
-#to format: First CTRL+A, then CTRL+SHIFT+A.
-#pipe: Ctrl+shift+m
-#comment: Ctrl+shift+c
+
 library(tidyverse)
-# TODO 2020 is Missing about 1,000 projects, fix them.
 #list_of_MDA_Codes <- tableOfContent$Code
 
 # Data Import -------------------------------------------------------------
@@ -31,8 +28,6 @@ data_pbi <- read_csv(
 data_pbi_2018 <-
   data_pbi %>%
   arrange(Id, Data.Column1) %>%
-  # mutate() %>%
-
 # 521 MINISTRY OF HEALTH ------------------------------------------------------
 
   add_row(
@@ -279,8 +274,6 @@ data_pbi_2018 <-
     Data.Column2 = "FGC WARRI",
     .before = 	19440
   ) %>%
-  #Table1090, 1,608,207,117| 6,140,534,238| 2,707,892,484| 332,040,722|1,542,878,441|11,167,659,024|9,607,649,775|5,454,566,912 |544,950,246|742,364,652|590,845,725|290,160,881|575,392,092|534,230,381|352,703,348|403,904,627|247,340,582|413,459,855|stop 428,708,224|365,604,666|1,734,588,286|||||| NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT
-  #stop table1300
   add_row(
     Id = "Table1250",
     Name = "Table1250 (Page 1529-1530)",
