@@ -345,6 +345,30 @@ data_pbi_2018 <-
     Data.Column2 = "NATIONAL BOARD FOR TECHNICAL EDUCATION",
     .before = 	25787
   ) %>%
+  add_row(
+    Id = "Table1260",
+    Name = "Table1260 (Page 1547-1548)",
+    Kind = "Table",
+    Data.Column1 = "517026052",
+    Data.Column2 = "FGGC EFON ALAYE",
+    .before = 	20872
+  ) %>%
+  add_row(
+    Id = "Table1130",
+    Name = "Table1130 (Page 1339)",
+    Kind = "Table",
+    Data.Column1 = "517019009",
+    Data.Column2 = "FEDERAL COLLEGE OF EDUCATION KOTANGORA",
+    .before = 	12366
+  ) %>%
+  add_row(
+    Id = "Table1161",
+    Name = "Table1161 (Page 1383-1384)",
+    Kind = "Table",
+    Data.Column1 = "517021014",
+    Data.Column2 = "UNIVERSITY OF PORT HARCOURT",
+    .before = 	14097
+  ) %>%
 # mutate ------------------------------------------------------------------
 
   
