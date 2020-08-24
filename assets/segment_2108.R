@@ -32,6 +32,9 @@ data_pbi_2018 <-
   data_pbi %>%
   arrange(Id, Data.Column1) %>%
   # mutate() %>%
+
+# 521 MINISTRY OF HEALTH ------------------------------------------------------
+
   add_row(
     Id = "Table1519",
     Name = "Table1519 (Page 1914-1915)",
@@ -168,6 +171,10 @@ data_pbi_2018 <-
     Data.Column2 = "PHS, ABEOKUTA",
     .before = 32587
   ) %>%
+  
+
+#517 MINISTRY OF EDUCATION ---------------------------------------------------
+
   add_row(
     Id = "Table1090",
     Name = "Table1090 (Page 1270-1271)",
@@ -272,7 +279,7 @@ data_pbi_2018 <-
     Data.Column2 = "FGC WARRI",
     .before = 	19440
   ) %>%
-  #Table1090, 1,608,207,117| 6,140,534,238| 2,707,892,484| 332,040,722|1,542,878,441|11,167,659,024|9,607,649,775|5,454,566,912 |544,950,246|742,364,652|590,845,725|290,160,881|575,392,092|534,230,381|352,703,348|403,904,627|247,340,582|413,459,855|428,708,224|365,604,666|1,734,588,286|||||| NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT
+  #Table1090, 1,608,207,117| 6,140,534,238| 2,707,892,484| 332,040,722|1,542,878,441|11,167,659,024|9,607,649,775|5,454,566,912 |544,950,246|742,364,652|590,845,725|290,160,881|575,392,092|534,230,381|352,703,348|403,904,627|247,340,582|413,459,855|stop 428,708,224|365,604,666|1,734,588,286|||||| NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT
   #stop table1300
   add_row(
     Id = "Table1250",
@@ -297,6 +304,46 @@ data_pbi_2018 <-
     Data.Column1 = "517026061",
     Data.Column2 = "FGGC IKOT-OBIO-ITONG",
     .before = 	21716
+  ) %>%
+  add_row(
+    Id = "Table1280",
+    Name = "Table1280 (Page 1584-1585)",
+    Kind = "Table",
+    Data.Column1 = "517026070",
+    Data.Column2 = "FGGC MONGUNO",
+    .before = 	22535
+  ) %>%
+  add_row(
+    Id = "Table1290",
+    Name = "Table1290 (Page 1602-1603)",
+    Kind = "Table",
+    Data.Column1 = "517026079",
+    Data.Column2 = "FGGC YOLA",
+    .before = 	23288
+  ) %>%
+  add_row(
+    Id = "Table1300",
+    Name = "Table1300 (Page 1624-1626)",
+    Kind = "Table",
+    Data.Column1 = "517026089",
+    Data.Column2 = "FGGC KAFANCHAN",
+    .before = 	24166
+  ) %>%
+  add_row(
+    Id = "Table1310",
+    Name = "Table1310 (Page 1646-1647)",
+    Kind = "Table",
+    Data.Column1 = "517026099",
+    Data.Column2 = "FTC ZURU",
+    .before = 	25078
+  ) %>%
+  add_row(
+    Id = "Table1320",
+    Name = "Table1320 (Page 1662-1663)",
+    Kind = "Table",
+    Data.Column1 = "517029001",
+    Data.Column2 = "NATIONAL BOARD FOR TECHNICAL EDUCATION",
+    .before = 	25787
   ) %>%
 # mutate ------------------------------------------------------------------
 
@@ -377,7 +424,8 @@ data_pbi_2018 <-
   select(-Name, -Kind)
 
 #write_csv(data_pbi_2018, "Data/semi_finished/budget_2018.csv")
-
+check_2_119_517 <- data_pbi_2018 %>% 
+  filter(Data.Column1 == "2", costCenter_Code == "0119")
 # checks ------------------------------------------------------------------
 
 
