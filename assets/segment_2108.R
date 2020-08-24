@@ -1,4 +1,5 @@
 
+
 library(tidyverse)
 #list_of_MDA_Codes <- tableOfContent$Code
 
@@ -28,16 +29,16 @@ data_pbi <- read_csv(
 data_pbi_2018 <-
   data_pbi %>%
   arrange(Id, Data.Column1) %>%
-# 521 MINISTRY OF HEALTH ------------------------------------------------------
+  # 521 MINISTRY OF HEALTH ------------------------------------------------------
 
-  add_row(
-    Id = "Table1519",
-    Name = "Table1519 (Page 1914-1915)",
-    Kind = "Table",
-    Data.Column1 = "543001001",
-    Data.Column2 = "NATIONAL POPULATION COMMISSION",
-    .before = 35464
-  ) %>%
+add_row(
+  Id = "Table1519",
+  Name = "Table1519 (Page 1914-1915)",
+  Kind = "Table",
+  Data.Column1 = "543001001",
+  Data.Column2 = "NATIONAL POPULATION COMMISSION",
+  .before = 35464
+) %>%
   add_row(
     Id = "Table1030",
     Name = "Table1030 (Page 1215-1216)",
@@ -167,17 +168,17 @@ data_pbi_2018 <-
     .before = 32587
   ) %>%
   
+  
+  #517 MINISTRY OF EDUCATION ---------------------------------------------------
 
-#517 MINISTRY OF EDUCATION ---------------------------------------------------
-
-  add_row(
-    Id = "Table1090",
-    Name = "Table1090 (Page 1270-1271)",
-    Kind = "Table",
-    Data.Column1 = "517016001",
-    Data.Column2 = "NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT",
-    .before = 9581
-  ) %>%
+add_row(
+  Id = "Table1090",
+  Name = "Table1090 (Page 1270-1271)",
+  Kind = "Table",
+  Data.Column1 = "517016001",
+  Data.Column2 = "NATIONAL COMMISSION FOR COLLEGE EDUCATION SECRETARIAT",
+  .before = 9581
+) %>%
   add_row(
     Id = "Table1110",
     Name = "Table1110 (Page 1301)",
@@ -362,39 +363,42 @@ data_pbi_2018 <-
     Data.Column2 = "UNIVERSITY OF PORT HARCOURT",
     .before = 	14097
   ) %>%
-# mutate ------------------------------------------------------------------
+  # mutate ------------------------------------------------------------------
 
-  
-  mutate(
-    SN = row_number(),
-    subCostCenterSum_Code = case_when(
-      #dectects any figure from 0-9 in a column
-      str_detect(Data.Column2, "^[0-9]") &
-        str_detect(Data.Column2, "\\,", negate = TRUE) &
-        str_length(Data.Column2) == 9 ~ paste0('0', Data.Column2)
-    ),
-    #the following detects the apperance of "ERGP" strictly () once {1}
-    projectCode = case_when(str_detect(Data.Column1, "^ERGP{1}") ~ Data.Column1),
-    expenditureCods = case_when(
-      #detects "^2" from the beginning of the column content
-      str_detect(Data.Column1, "^2") &
-        #[A-Z] because the desired colum have text in the next column
-        str_detect(Data.Column2, "[A-Z]") ~ Data.Column1
-    ),
-    #here we choose to identify relevant tables by their starting codes which in most cases only have two columns thus the sucessuive columns will be empty
-    table_identifier = case_when(
-      str_detect(Data.Column1, "^[0-9]") &
-        is.na(Data.Column3) &
-        is.na(Data.Column4) &
-        is.na(Data.Column5)  ~ paste0('0', Data.Column1),
-      !is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
-    ),
-    table_identifier_MDA = if_else(
-      subCostCenterSum_Code == table_identifier,
-      Data.Column3,
-      case_when(!is.na(table_identifier) ~ Data.Column2)
-    )
-  ) %>%
+
+mutate(
+  SN = row_number(),
+  subCostCenterSum_Code = case_when(
+    #dectects any figure from 0-9 in a column
+    str_detect(Data.Column2, "^[0-9]") &
+      str_detect(Data.Column2, "\\,", negate = TRUE) &
+      str_length(Data.Column2) == 9 ~ paste0('0', Data.Column2)
+  ),
+  #the following detects the apperance of "ERGP" strictly () once {1}
+  projectCode = case_when(str_detect(Data.Column1, "^ERGP{1}") ~ Data.Column1),
+  expenditureCods = case_when(
+    #detects "^2" from the beginning of the column content
+    str_detect(Data.Column1, "^2") &
+      #[A-Z] because the desired colum have text in the next column
+      str_detect(Data.Column2, "[A-Z]") ~ Data.Column1
+  ),
+  #here we choose to identify relevant tables by their starting codes which in most cases only have two columns thus the sucessuive columns will be empty
+  table_identifier = case_when(
+    str_detect(Data.Column1, "^[0-9]") &
+      is.na(Data.Column3) &
+      is.na(Data.Column4) &
+      is.na(Data.Column5)  ~ paste0('0', Data.Column1),
+    !is.na(subCostCenterSum_Code) ~ subCostCenterSum_Code
+  ),
+  table_identifier_MDA = if_else(
+    !is.na(table_identifier),
+    Data.Column2,
+    case_when(subCostCenterSum_Code == table_identifier ~ Data.Column3)
+    # subCostCenterSum_Code == table_identifier,
+    # Data.Column3,
+    #case_when(!is.na(table_identifier) ~ Data.Column2)
+  )
+) %>%
   # we then fill the sucessive rows downwards
   fill(table_identifier, table_identifier_MDA) %>%
   mutate(
@@ -441,7 +445,7 @@ data_pbi_2018 <-
   select(-Name, -Kind)
 
 #write_csv(data_pbi_2018, "Data/semi_finished/budget_2018.csv")
-check_2_119_517 <- data_pbi_2018 %>% 
+check_2_119_517 <- data_pbi_2018 %>%
   filter(Data.Column1 == "2", costCenter_Code == "0119")
 # checks ------------------------------------------------------------------
 
