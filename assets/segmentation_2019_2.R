@@ -1,5 +1,14 @@
 library(tidyverse)
 
+# Import data -------------------------------------------------------------
+
+
+library(readr)
+output2019 <- read_csv("Data/Raw/output2019.csv", 
+                       col_types = cols(X5 = col_character(), 
+                                        X6 = col_character(), X7 = col_character(), 
+                                        X8 = col_character()))
+View(output2019)
 
 # Extract the Capital Expenditure projects --------------------------------
 
@@ -62,4 +71,59 @@ data_pbi_2019_start_2 <- output2019 %>%
         str_detect(Data.Column3, "^2019") ~ Data.Column1
     ),
     table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)
-  )
+  ) %>% 
+  fill(table_identifier, table_identifier_MDA) %>%
+  mutate(
+    costCenter_Code = str_sub(table_identifier, end = 4),
+    lineExpCode = case_when(
+      Data.Column1 == "2" &
+        str_detect(Data.Column2, "(EXP){1}") ~ Data.Column1
+    ),
+    lineExpTerm = case_when(!is.na(lineExpCode) ~ Data.Column2),
+    lineExpCodeLevel1 = case_when(
+      str_detect(Data.Column1, "21|22|23|24") &
+        str_length(Data.Column1) == 2 &
+        str_length(Data.Column2) > 5 ~ Data.Column1),
+    lineExpTermLevel1 = case_when(!is.na(lineExpCodeLevel1) ~ Data.Column2),
+    lineExpCodeLevel2 = case_when(
+      str_detect(Data.Column1, "21|22|23|24") &
+        str_length(Data.Column1) == 4 ~ Data.Column1
+    ),
+    lineExpTermLevel2 = case_when(!is.na(lineExpCodeLevel2) ~ Data.Column2),
+    lineExpCodeLevel3 = case_when(
+      str_detect(Data.Column1, "21|22|23|24") &
+        str_length(Data.Column1) == 6 ~ Data.Column1
+    ),
+    lineExpTermLevel3 = case_when(!is.na(lineExpCodeLevel3) ~ Data.Column2),
+    lineExpCodeLevel4 = case_when(
+      str_detect(Data.Column1, "21|22|23|24") &
+        str_length(Data.Column1) == 8 ~ Data.Column1
+    ),
+    lineExpTermLevel4 = case_when(!is.na(lineExpCodeLevel4) ~ Data.Column2),
+    Year = 2019
+  ) %>% 
+  fill(
+    lineExpCode,
+    lineExpTerm,
+    lineExpCodeLevel1,
+    lineExpTermLevel1,
+    lineExpTermLevel2,
+    lineExpCodeLevel2,
+    lineExpTermLevel3,
+    lineExpCodeLevel3
+  ) %>% 
+  filter(!is.na(lineExpCodeLevel4)) %>% 
+  mutate(Amount = as.numeric(str_replace_all(Data.Column4, ",", ""))) %>% 
+  select(-(Data.Column1:Data.Column8))
+
+# checks ------------------------------------------------------------------
+#TODO the foolowing ommits certain figures appearing in the data_pbi_2019_start_2 data above. Fix ME.
+check_data_pbi_2019_start_2 <- data_pbi_2019_start_2 %>%
+group_by(costCenter_Code, lineExpTermLevel1) %>%
+  summarise(totalAllocation = sum(Amount)) %>%
+  pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>%
+  replace(is.na(.), 0) %>%
+  mutate(budgetTotal = format((`CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`),
+                              big.mark = ",",
+                              nsmall = 1
+  ))
