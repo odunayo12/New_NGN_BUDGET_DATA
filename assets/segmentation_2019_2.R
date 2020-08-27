@@ -4,10 +4,15 @@ library(tidyverse)
 
 
 library(readr)
-output2019 <- read_csv("Data/Raw/output2019.csv", 
-                       col_types = cols(X5 = col_character(), 
-                                        X6 = col_character(), X7 = col_character(), 
-                                        X8 = col_character()))
+output2019 <- read_csv(
+  "Data/Raw/output2019.csv",
+  col_types = cols(
+    X5 = col_character(),
+    X6 = col_character(),
+    X7 = col_character(),
+    X8 = col_character()
+  )
+)
 View(output2019)
 
 # Extract the Capital Expenditure projects --------------------------------
@@ -64,14 +69,27 @@ data_pbi_2019_start_2 <- output2019 %>%
     Data.Column7 = X7,
     Data.Column8 = X8
   ) %>%
-  mutate(
-    table_identifier = case_when(
-      str_detect(Data.Column1, "^0") & str_length(Data.Column1) == 10 &
-        str_detect(Data.Column4, "^2019") |
-        str_detect(Data.Column3, "^2019") ~ Data.Column1
-    ),
-    table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)
-  ) %>% 
+  # substitute unknown chars with empty space
+  mutate_at(vars(
+    Data.Column1,
+    Data.Column2,
+    Data.Column3,
+    Data.Column4,
+    Data.Column5,
+    Data.Column6,
+    Data.Column7,
+    Data.Column8
+  ), function(x) {
+    gsub('[^ -~]', '', x)
+  }) %>% 
+mutate(
+  table_identifier = case_when(
+    str_detect(Data.Column1, "^0") & str_length(Data.Column1) == 10 &
+      str_detect(Data.Column4, "^2019") |
+      str_detect(Data.Column3, "^2019") ~ Data.Column1
+  ),
+  table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)
+) %>%
   fill(table_identifier, table_identifier_MDA) %>%
   mutate(
     costCenter_Code = str_sub(table_identifier, end = 4),
@@ -83,7 +101,8 @@ data_pbi_2019_start_2 <- output2019 %>%
     lineExpCodeLevel1 = case_when(
       str_detect(Data.Column1, "21|22|23|24") &
         str_length(Data.Column1) == 2 &
-        str_length(Data.Column2) > 5 ~ Data.Column1),
+        str_length(Data.Column2) > 5 ~ Data.Column1
+    ),
     lineExpTermLevel1 = case_when(!is.na(lineExpCodeLevel1) ~ Data.Column2),
     lineExpCodeLevel2 = case_when(
       str_detect(Data.Column1, "21|22|23|24") &
@@ -101,7 +120,7 @@ data_pbi_2019_start_2 <- output2019 %>%
     ),
     lineExpTermLevel4 = case_when(!is.na(lineExpCodeLevel4) ~ Data.Column2),
     Year = 2019
-  ) %>% 
+  ) %>%
   fill(
     lineExpCode,
     lineExpTerm,
@@ -111,15 +130,16 @@ data_pbi_2019_start_2 <- output2019 %>%
     lineExpCodeLevel2,
     lineExpTermLevel3,
     lineExpCodeLevel3
-  ) %>% 
-  filter(!is.na(lineExpCodeLevel4)) %>% 
-  mutate(Amount = as.numeric(str_replace_all(Data.Column4, ",", ""))) %>% 
+  ) %>%
+  filter(!is.na(lineExpCodeLevel4)) %>%
+  #mutate(Amount = Data.Column4) %>%
+  mutate(Amount = as.numeric(str_replace_all(Data.Column4, ",", ""))) #%>%
   select(-(Data.Column1:Data.Column8))
 
 # checks ------------------------------------------------------------------
 #TODO the foolowing ommits certain figures appearing in the data_pbi_2019_start_2 data above. Fix ME.
 check_data_pbi_2019_start_2 <- data_pbi_2019_start_2 %>%
-group_by(costCenter_Code, lineExpTermLevel1) %>%
+  group_by(costCenter_Code, lineExpTermLevel1) %>%
   summarise(totalAllocation = sum(Amount)) %>%
   pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>%
   replace(is.na(.), 0) %>%
