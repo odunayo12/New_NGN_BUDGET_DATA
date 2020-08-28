@@ -1,5 +1,6 @@
 
 
+
 library(tidyverse)
 #list_of_MDA_Codes <- tableOfContent$Code
 
@@ -442,11 +443,28 @@ mutate(
     lineExpTermLevel3,
     lineExpCodeLevel3
   ) %>%
-  select(-Name, -Kind)
+  select(-Name, -Kind) %>%
+  filter(!is.na(lineExpCodeLevel4)) %>%
+  mutate(Amount = if_else(
+    is.na(Data.Column3),
+    as.numeric(str_replace_all(Data.Column4, ",", "")),
+    as.numeric(str_replace_all(Data.Column3, ",", ""))
+  )) %>%
+  select(
+    Year,
+    costCenter_Code,
+    #costCenter_Code_MDA,
+    table_identifier,
+    table_identifier_MDA,
+    (lineExpCode:Amount)
+  )
 
+# TODO write a formula to obtain sumarries by MDA and MDA subgroup
+# TODO merge the MDA column in the MDA tble to generate costCenter_Code_MDA like 2019
+
+write_csv(data_pbi_2018, "Data/finished_sets/csv_/budget_2018.csv")
 #write_csv(data_pbi_2018, "Data/semi_finished/budget_2018.csv")
-check_2_119_517 <- data_pbi_2018 %>%
-  filter(Data.Column1 == "2", costCenter_Code == "0119")
+
 # checks ------------------------------------------------------------------
 
 

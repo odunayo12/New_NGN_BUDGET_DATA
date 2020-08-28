@@ -71,7 +71,7 @@ data_pbi_2019_start_2 <- output2019 %>%
     Data.Column7 = X7,
     Data.Column8 = X8
   ) %>%
-  # substitute unknown chars with empty space
+  # substitute special chars with empty space and trim content
   mutate_at(vars(
     Data.Column1,
     Data.Column2,
@@ -82,20 +82,40 @@ data_pbi_2019_start_2 <- output2019 %>%
     Data.Column7,
     Data.Column8
   ), function(x) {
+    #the following does same thing
     #iconv(x, 'utf-8', 'ascii', sub='')
     gsub('[^ -~]', '', str_trim(x))
-  }) %>% 
-mutate(
-  table_identifier = case_when(
-    str_detect(Data.Column1, "^0") & str_length(Data.Column1) == 10 &
-      str_detect(Data.Column4, "^2019") |
-      str_detect(Data.Column3, "^2019") ~ Data.Column1
-  ),
-  table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)
-) %>%
+  }) %>%
+  mutate(
+    #replace missing values
+    Data.Column2 = replace(
+      Data.Column2,
+      Data.Column3 == 'MINISTRY OF DEFENCE' &
+        Data.Column1 == '1.',
+      '0116'
+    ),
+    Data.Column3 = replace(
+      Data.Column3,
+      Data.Column2 == '0125' &
+        Data.Column1 == '1.' &
+        is.na(Data.Column3),
+      'OFFICE OF THE HEAD OF THE CIVIL SERVICE OF THE FEDERATION'
+    ),
+    table_identifier = case_when(
+      str_detect(Data.Column1, "^0") & str_length(Data.Column1) == 10 &
+        str_detect(Data.Column4, "^2019") |
+        str_detect(Data.Column3, "^2019") ~ Data.Column1
+    ),
+    table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)
+  ) %>%
   fill(table_identifier, table_identifier_MDA) %>%
   mutate(
-    costCenter_Code = str_sub(table_identifier, end = 4),
+    #costCenter_Code = str_sub(table_identifier, end = 4),
+    costCenter_Code = case_when(
+      str_length(Data.Column2) == 4 &
+        str_detect(Data.Column2, '^0') ~ Data.Column2
+    ),
+    costCenter_Code_MDA = case_when(!is.na(costCenter_Code) ~ Data.Column3),
     lineExpCode = case_when(
       Data.Column1 == "2" &
         str_detect(Data.Column2, "(EXP){1}") ~ Data.Column1
@@ -122,7 +142,11 @@ mutate(
         str_length(Data.Column1) == 8 ~ Data.Column1
     ),
     lineExpTermLevel4 = case_when(!is.na(lineExpCodeLevel4) ~ Data.Column2),
-    Amount = if_else(is.na(Data.Column4), as.numeric(Data.Column5), as.numeric(Data.Column4)),
+    Amount = if_else(
+      is.na(Data.Column4),
+      as.numeric(Data.Column5),
+      as.numeric(Data.Column4)
+    ),
     Year = 2019
   ) %>%
   fill(
@@ -133,12 +157,38 @@ mutate(
     lineExpTermLevel2,
     lineExpCodeLevel2,
     lineExpTermLevel3,
-    lineExpCodeLevel3
+    lineExpCodeLevel3,
+    costCenter_Code,
+    costCenter_Code_MDA
   ) %>%
-  filter(!is.na(lineExpCodeLevel4)) #%>%
-  #mutate(Amount = Data.Column4) %>%
-  mutate(Amount = as.numeric(str_replace_all(Data.Column4, ",", ""))) #%>%
-  select(-(Data.Column1:Data.Column8))
+  filter(!is.na(lineExpCodeLevel4)) %>%
+  select(
+    Year,
+    costCenter_Code,
+    costCenter_Code_MDA,
+    table_identifier,
+    table_identifier_MDA,
+    (lineExpCode:Amount)
+  ) %>%
+  rename(
+    `MDA Code` = table_identifier,
+    `MDA Name` = table_identifier_MDA,
+    `Main MDA Code` = costCenter_Code,
+    `Main MDA Name` = costCenter_Code_MDA,
+    `Expenditure Code` = lineExpCode,
+    `Expenditure` = lineExpTerm,
+    `Fund Code` = lineExpCodeLevel1,
+    `Fund` = lineExpTermLevel1,
+    `Line Expense Code` = lineExpCodeLevel2,
+    `Line Expense` = lineExpTermLevel2,
+    `Line Expense Sub-group Code` = lineExpCodeLevel3,
+    `Line Expense Sub-group` = lineExpTermLevel3,
+    `Main Cost Code` = lineExpCodeLevel4,
+    `Main Cost Item` = lineExpTermLevel4
+  )
+
+write_csv(data_pbi_2019_start_2,
+          "Data/finished_sets/csv_/budget_2019.csv")
 
 # checks ------------------------------------------------------------------
 #TODO the foolowing ommits certain figures appearing in the data_pbi_2019_start_2 data above. Fix ME.
