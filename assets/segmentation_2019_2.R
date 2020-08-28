@@ -7,11 +7,13 @@ library(readr)
 output2019 <- read_csv(
   "Data/Raw/output2019.csv",
   col_types = cols(
-    X5 = col_character(),
+    X4 = col_number(),
+    X5 = col_number(),
     X6 = col_character(),
     X7 = col_character(),
     X8 = col_character()
-  )
+  )#,
+  #locale = locale(asciify = TRUE)
 )
 View(output2019)
 
@@ -80,7 +82,8 @@ data_pbi_2019_start_2 <- output2019 %>%
     Data.Column7,
     Data.Column8
   ), function(x) {
-    gsub('[^ -~]', '', x)
+    #iconv(x, 'utf-8', 'ascii', sub='')
+    gsub('[^ -~]', '', str_trim(x))
   }) %>% 
 mutate(
   table_identifier = case_when(
@@ -119,6 +122,7 @@ mutate(
         str_length(Data.Column1) == 8 ~ Data.Column1
     ),
     lineExpTermLevel4 = case_when(!is.na(lineExpCodeLevel4) ~ Data.Column2),
+    Amount = if_else(is.na(Data.Column4), as.numeric(Data.Column5), as.numeric(Data.Column4)),
     Year = 2019
   ) %>%
   fill(
@@ -131,7 +135,7 @@ mutate(
     lineExpTermLevel3,
     lineExpCodeLevel3
   ) %>%
-  filter(!is.na(lineExpCodeLevel4)) %>%
+  filter(!is.na(lineExpCodeLevel4)) #%>%
   #mutate(Amount = Data.Column4) %>%
   mutate(Amount = as.numeric(str_replace_all(Data.Column4, ",", ""))) #%>%
   select(-(Data.Column1:Data.Column8))
