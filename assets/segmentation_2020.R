@@ -122,8 +122,13 @@ data_pbi_2020_start <- data_pbi_2020 %>%
   ) %>%
   select(-Name, -Kind) #%>%
 filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4))
-#%>%
-slice(40500:n())
+
+
+# inspect -----------------------------------------------------------------
+#TODO Search for how to get distinct table of MDAs from data_pbi_2020_start
+#length(which(str_length(data_pbi_2020_start$Data.Column2 == 3) & data_pbi_2020_start$Id == "Table001" & str_detect(data_pbi_2020_start$Data.Column2, "^\\d")))
+inspect_for_completion <- data_pbi_2020_start 
+
 
 # write_csv(data_pbi_2020_start,
 #           'Data/finished_sets/csv_/data_pbi_2020_start.csv')

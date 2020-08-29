@@ -403,7 +403,8 @@ mutate(
   # we then fill the sucessive rows downwards
   fill(table_identifier, table_identifier_MDA) %>%
   mutate(
-    costCenter_Code = str_sub(table_identifier, end = 4),
+    # Code will be later renamed costCenter_Code
+    Code = str_sub(table_identifier, end = 4),
     lineExpCode = case_when(
       Data.Column1 == "2" &
         str_detect(Data.Column2, "(EXP){1}") ~ Data.Column1
@@ -443,8 +444,10 @@ mutate(
     lineExpTermLevel3,
     lineExpCodeLevel3
   ) %>%
-  select(-Name, -Kind) %>%
   filter(!is.na(lineExpCodeLevel4)) %>%
+  left_join(MDA_Table) %>% 
+  rename(costCenter_Code = Code,
+         costCenter_Code_MDA = MDA) %>% 
   mutate(Amount = if_else(
     is.na(Data.Column3),
     as.numeric(str_replace_all(Data.Column4, ",", "")),
@@ -453,11 +456,13 @@ mutate(
   select(
     Year,
     costCenter_Code,
-    #costCenter_Code_MDA,
+    costCenter_Code_MDA,
     table_identifier,
     table_identifier_MDA,
     (lineExpCode:Amount)
   )
+
+save_data_pbi_2018 <- data_pbi_2018
 
 # TODO write a formula to obtain sumarries by MDA and MDA subgroup
 # TODO merge the MDA column in the MDA tble to generate costCenter_Code_MDA like 2019
@@ -469,18 +474,12 @@ write_csv(data_pbi_2018, "Data/finished_sets/csv_/budget_2018.csv")
 
 
 check_data_pbi_2018 <- data_pbi_2018 %>%
-  filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
-  mutate(Amount = if_else(
-    is.na(Data.Column3),
-    as.numeric(str_replace_all(Data.Column4, ",", "")),
-    as.numeric(str_replace_all(Data.Column3, ",", ""))
-  )) %>%
-  group_by(costCenter_Code, lineExpTermLevel1) %>%
+  group_by(costCenter_Code, costCenter_Code_MDA, lineExpTermLevel1) %>%
   summarise(totalAllocation = sum(Amount)) %>%
   pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>%
   replace(is.na(.), 0) %>%
   #summarise_all(funs(sum))
-  mutate(budgetTotal = format((`CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`),
+  mutate(`TOTAL ALLOCATION` = format((`CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`),
                               big.mark = ",",
                               nsmall = 1
   ))

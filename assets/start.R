@@ -1,3 +1,4 @@
+library(tabulizer)
 library(pdftools)
 library(tidyverse)
 
@@ -30,6 +31,14 @@ tableOfContent <- tableOfContentPrelim %>%
 write_csv(tableOfContent, 'Data/tableOfContent.csv')
 
 
+#2020 MDAS -----------------------------------
+ectract_MDAS_2020 <- extract_areas('PDF_Data/2020_Executive_Budget_Proposal.pdf',pages = 1:2)
+#selects the first 3 columns and all rows of the 2 vectors and returns a dataframe for each
+ectract_MDAS_2020[[1]] <- data.frame(ectract_MDAS_2020[[1]], stringsAsFactors = FALSE)
+ectract_MDAS_2020[[2]] <- data.frame(ectract_MDAS_2020[[2]], stringsAsFactors = FALSE)
+
+# Label the columns
+wont_work<- c('costCenter', 'Page')
 # tableOfContent <- tableOfContent %>% 
   #select(everything()) %>% 
 
@@ -51,4 +60,4 @@ write_csv(tableOfContent, 'Data/tableOfContent.csv')
 # 
 # # save as csv
 # write_csv(tableOfMDAs, 'Data/tableOfMDAs.csv')
-# TO_DO: Merge tableOfContent with MDA_Table.csv
+# TODO: Merge tableOfContent with MDA_Table.csv
