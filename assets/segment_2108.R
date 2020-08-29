@@ -1,6 +1,7 @@
 
 
 
+
 library(tidyverse)
 #list_of_MDA_Codes <- tableOfContent$Code
 
@@ -433,7 +434,6 @@ mutate(
     lineExpTermLevel4 = case_when(!is.na(lineExpCodeLevel4) ~ Data.Column2),
     Year = 2018
   ) %>%
-  #arrange(Id, Data.Column1) %>%
   fill(
     lineExpCode,
     lineExpTerm,
@@ -445,9 +445,9 @@ mutate(
     lineExpCodeLevel3
   ) %>%
   filter(!is.na(lineExpCodeLevel4)) %>%
-  left_join(MDA_Table) %>% 
+  left_join(MDA_Table) %>%
   rename(costCenter_Code = Code,
-         costCenter_Code_MDA = MDA) %>% 
+         costCenter_Code_MDA = MDA) %>%
   mutate(Amount = if_else(
     is.na(Data.Column3),
     as.numeric(str_replace_all(Data.Column4, ",", "")),
@@ -459,13 +459,39 @@ mutate(
     costCenter_Code_MDA,
     table_identifier,
     table_identifier_MDA,
-    (lineExpCode:Amount)
+    (lineExpCode:Amount),
+    -No
   )
 
-save_data_pbi_2018 <- data_pbi_2018
+# save local copy
+write_csv(data_pbi_2018,
+          "Data/finished_sets/csv_/budget_2018.csv")
+
+
+# convert column names to readable forms
+budget_2018_public <- data_pbi_2018 %>%
+  rename(
+    `MDA Code` = table_identifier,
+    `MDA Name` = table_identifier_MDA,
+    `Main MDA Code` = costCenter_Code,
+    `Main MDA Name` = costCenter_Code_MDA,
+    `Expenditure Code` = lineExpCode,
+    `Expenditure` = lineExpTerm,
+    `Fund Code` = lineExpCodeLevel1,
+    `Fund` = lineExpTermLevel1,
+    `Line Expense Code` = lineExpCodeLevel2,
+    `Line Expense` = lineExpTermLevel2,
+    `Line Expense Sub-group Code` = lineExpCodeLevel3,
+    `Line Expense Sub-group` = lineExpTermLevel3,
+    `Main Cost Code` = lineExpCodeLevel4,
+    `Main Cost Item` = lineExpTermLevel4
+  )
+
+# save the data
+write_csv(budget_2018_public, "Budget_Data/budget_2018.csv")
+
 
 # TODO write a formula to obtain sumarries by MDA and MDA subgroup
-# TODO merge the MDA column in the MDA tble to generate costCenter_Code_MDA like 2019
 
 write_csv(data_pbi_2018, "Data/finished_sets/csv_/budget_2018.csv")
 #write_csv(data_pbi_2018, "Data/semi_finished/budget_2018.csv")
@@ -480,8 +506,8 @@ check_data_pbi_2018 <- data_pbi_2018 %>%
   replace(is.na(.), 0) %>%
   #summarise_all(funs(sum))
   mutate(`TOTAL ALLOCATION` = format((`CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`),
-                              big.mark = ",",
-                              nsmall = 1
+                                     big.mark = ",",
+                                     nsmall = 1
   ))
 
 check_data <- function(requiredData) {

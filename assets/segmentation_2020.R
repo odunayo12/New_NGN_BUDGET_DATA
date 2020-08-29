@@ -24,6 +24,17 @@ data_pbi_2020 <-
 View(data_pbi_2020)
 
 
+
+# Table of MDAs 2020 -----------------------------------------------------------------
+MDA_Table_2020 <- data_pbi_2020 %>%
+  filter(str_length(Data.Column2) == 3 &
+           Id == "Table001" & str_detect(Data.Column2, "^\\d")) %>%
+  select(Data.Column2, Data.Column3) %>%
+  rename(Code = Data.Column2, MDA = Data.Column3) %>%
+  arrange(Code) %>%
+  mutate(No = 1:n(), Code = str_c("0", Code))
+
+
 # Cleaning ----------------------------------------------------------------
 
 data_pbi_2020_start <- data_pbi_2020 %>%
@@ -80,7 +91,8 @@ data_pbi_2020_start <- data_pbi_2020 %>%
   # we then fill the sucessive rows downwards
   fill(table_identifier, table_identifier_MDA) %>%
   mutate(
-    costCenter_Code = str_sub(table_identifier, end = 4),
+    # Code will be later renamed costCenter_Code
+    Code = str_sub(table_identifier, end = 4),
     lineExpCode = case_when(
       Data.Column1 == "2" &
         str_detect(Data.Column2, "^EXP{1}") ~ Data.Column1
@@ -109,7 +121,6 @@ data_pbi_2020_start <- data_pbi_2020 %>%
     lineExpTermLevel4 = case_when(!is.na(lineExpCodeLevel4) ~ Data.Column2),
     Year = 2020
   ) %>%
-  #arrange(Id, Data.Column1) %>%
   fill(
     lineExpCode,
     lineExpTerm,
@@ -120,22 +131,53 @@ data_pbi_2020_start <- data_pbi_2020 %>%
     lineExpTermLevel3,
     lineExpCodeLevel3
   ) %>%
-  select(-Name, -Kind) #%>%
-filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4))
+  filter(!is.na(lineExpCodeLevel4)) %>%
+  left_join(MDA_Table_2020) %>%
+  rename(costCenter_Code = Code,
+         costCenter_Code_MDA = MDA) %>%
+  mutate(Amount = if_else(
+    is.na(Data.Column3),
+    as.numeric(str_replace_all(Data.Column4, ",", "")),
+    as.numeric(str_replace_all(Data.Column3, ",", ""))
+  )) %>%
+  select(
+    Year,
+    costCenter_Code,
+    costCenter_Code_MDA,
+    table_identifier,
+    table_identifier_MDA,
+    (lineExpCode:Amount),
+    -No
+  )
+
+write_csv(data_pbi_2020_start,
+          'Data/finished_sets/csv_/budget_2020.csv')
+
+# convert column names to readable forms
+budget_2020_public <- data_pbi_2020_start %>%
+  rename(
+    `MDA Code` = table_identifier,
+    `MDA Name` = table_identifier_MDA,
+    `Main MDA Code` = costCenter_Code,
+    `Main MDA Name` = costCenter_Code_MDA,
+    `Expenditure Code` = lineExpCode,
+    `Expenditure` = lineExpTerm,
+    `Fund Code` = lineExpCodeLevel1,
+    `Fund` = lineExpTermLevel1,
+    `Line Expense Code` = lineExpCodeLevel2,
+    `Line Expense` = lineExpTermLevel2,
+    `Line Expense Sub-group Code` = lineExpCodeLevel3,
+    `Line Expense Sub-group` = lineExpTermLevel3,
+    `Main Cost Code` = lineExpCodeLevel4,
+    `Main Cost Item` = lineExpTermLevel4
+  )
+
+# save the data
+write_csv(budget_2020_public, "Budget_Data/budget_2020.csv")
 
 
-# inspect -----------------------------------------------------------------
-#TODO Search for how to get distinct table of MDAs from data_pbi_2020_start
-#length(which(str_length(data_pbi_2020_start$Data.Column2 == 3) & data_pbi_2020_start$Id == "Table001" & str_detect(data_pbi_2020_start$Data.Column2, "^\\d")))
-inspect_for_completion <- data_pbi_2020_start 
+# inspection --------------------------------------------------------------
 
-
-# write_csv(data_pbi_2020_start,
-#           'Data/finished_sets/csv_/data_pbi_2020_start.csv')
-#
-# write_csv(data_pbi_2020_start,
-#           'Data/finished_sets/csv_/data_pbi_2020_start_2.csv')
-#
 finshed_2020 <- data_pbi_2020_start %>%
   filter(!is.na(expenditureCods),  !is.na(lineExpCodeLevel4)) %>%
   mutate(Amount = if_else(

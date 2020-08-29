@@ -169,7 +169,15 @@ data_pbi_2019_start_2 <- output2019 %>%
     table_identifier,
     table_identifier_MDA,
     (lineExpCode:Amount)
-  ) %>%
+  )
+
+# save local copy
+write_csv(data_pbi_2019_start_2,
+          "Data/finished_sets/csv_/budget_2019.csv")
+
+
+# convert column names to readable forms
+budget_2019_public <- data_pbi_2019_start_2 %>%
   rename(
     `MDA Code` = table_identifier,
     `MDA Name` = table_identifier_MDA,
@@ -187,8 +195,8 @@ data_pbi_2019_start_2 <- output2019 %>%
     `Main Cost Item` = lineExpTermLevel4
   )
 
-write_csv(data_pbi_2019_start_2,
-          "Data/finished_sets/csv_/budget_2019.csv")
+# save the data
+write_csv(budget_2019_public, "Budget_Data/budget_2019.csv")
 
 # checks ------------------------------------------------------------------
 #TODO the foolowing ommits certain figures appearing in the data_pbi_2019_start_2 data above. Fix ME.
