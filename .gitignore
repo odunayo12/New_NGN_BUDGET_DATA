@@ -5,7 +5,6 @@
 .pbix
 *.xlsx
 *.txt
-*.csv
 .env
 *.pdf
 /Data
