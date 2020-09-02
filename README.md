@@ -6,6 +6,11 @@ I once needed a transparent budget data of Nigeria and found none but some summa
 1. To serve the information and decision-making needs of people.
 2. To provide a locally accessible data for data-analyst enthusiasts.
 
-To follow:
-1. Data in #MySql format
-2. Detailed Exploratory #Analytics and Visualization through blogposts
+## Files and Folders
+* **/Budget_Data** contains budget data for each year from 2018 to 2020
+* **/assets** contains the data wrangling or data cleaning scripts
+
+
+## To follow:
+1. Data in MySql format
+2. Detailed Exploratory Analytics and Visualization through blogposts
