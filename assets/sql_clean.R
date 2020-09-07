@@ -87,7 +87,7 @@ codes_n_meaning_table <-
   add_row(expd_id = '2', expd_term = "EXPENDITURE", .before = 1)
 
 all_year_sql <- all_year %>% 
-  select(!contains('Term'), -table_identifier_MDA, -costCenter_Code_MDA)%>%
+  select(!contains('Term'), -table_identifier_MDA, lineExpTerm, lineExpTermLevel1)%>%
   view()
 #save-----------------------------------------------------------------------
 write_csv(all_year, 'Data/sql_/all_year.csv')
