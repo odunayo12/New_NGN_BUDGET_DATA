@@ -10,6 +10,7 @@ import csv
 import pandas
 from dateutil.parser import ParserError
 import re
+from urllib.parse import urlparse
 # %%
 
 
@@ -33,11 +34,11 @@ for each_item in limit:
                 regex = re.compile(r'[\n\r\t/, ]')
                 pdf_title = regex.sub("", h3_list.text) + '.pdf'
                 # get the last 8 characters of the anchor tag
-                if anchor_tag[-8:] == "download" or pdf_title[0:3] != "Rev":
+                if anchor_tag[23] is not "r" and anchor_tag[-8:] == "download":
                     lead_domain = "https://www.budgetoffice.gov.ng"
                     # soup_box.append(lead_domain + anchor_tag)
                     pdf_file_dwnld = lead_domain + anchor_tag
-                    soup_box.append(pdf_title)
+                    soup_box.append(pdf_file_dwnld)
                 # directories
                 fileDir = os.path.abspath(os.path.join(
                     os.path.dirname('__file__'), '..', 'scrapped-files'))
@@ -72,4 +73,5 @@ for each_stuff in years_s:
                     regex = re.compile(r'[\n\r\t/, ]')
                     pdf_title = regex.sub(
                         "", h3_list.text) + f'{each_stuff}.pdf'
+
 # %%
