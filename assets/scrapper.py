@@ -21,6 +21,7 @@ def make_soup(url):
 
 
 # %%
+# TODO: write regex thst can capture 'RevenueM | 2014 | Over' in pdf_title_re as well as in and plus (r for revenue and ending 'download) in anchor_tag
 limit = [0, 15, 30, 45]
 soup_box = []
 for each_item in limit:
@@ -33,12 +34,13 @@ for each_item in limit:
                 anchor_tag = h3_list.get('href')
                 regex = re.compile(r'[\n\r\t/, ]')
                 pdf_title_re = regex.sub("", h3_list.text) + '.pdf'
-                if re.search('RevenueM', pdf_title_re):
+                if re.findall(r'RevenueM | 2014 | Over', pdf_title_re):
                     pdf_title_re = ""
-                    # soup_box.append()
+
                     #print(re.search('RevenueM', pdf_title_re).group())
                 else:
                     pdf_title = pdf_title_re
+                    soup_box.append(pdf_title_re)
                     # print(pdf_title)
                     # print(len(pdf_title))
                 # get the last 8 characters of the anchor tag
@@ -47,7 +49,7 @@ for each_item in limit:
                     # soup_box.append(lead_domain + anchor_tag)
                     pdf_file_dwnld = lead_domain + anchor_tag
                     #anchor_tag = h3_list.get('href')
-                    soup_box.append(pdf_file_dwnld + pdf_title)
+                    #soup_box.append(pdf_file_dwnld + pdf_title)
                 # directories
                 fileDir = os.path.abspath(os.path.join(
                     os.path.dirname('__file__'), '..', 'scrapped-files'))
@@ -67,7 +69,13 @@ for pdf_filepath in import_files:
     tabula.convert_into(pdf_filepath, csv_filepath,
                         lattice=True,  output_format="csv", pages="all")
 
-# # %%
+# %%
+csv_import_files_dir = glob.glob(os.path.join(fileDir, '*.csv'))
+
+dataframe_from_each_file = (pandas.read_csv(
+    f, encoding='unicode-escape', error_bad_lines=False) for f in csv_import_files_dir)
+concatenated_csv = pandas.concat(dataframe_from_each_file, ignore_index=True)
+# %%
 # soup_bowl = []
 # years_s = [2014, 2015, 2016]
 # limit = [0, 15, 30, 45]
@@ -118,3 +126,5 @@ for pdf_filepath in import_files:
 #         csv_filepath = os.path.join(pdf_filepath, f'{each_stuff}').replace('.pdf', '.csv')
 #         tabula.convert_into(pdf_filepath, csv_filepath,
 #                         lattice=True,  output_format="csv", pages="all")
+
+# %%
