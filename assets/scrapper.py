@@ -34,30 +34,33 @@ for each_item in limit:
                 anchor_tag = h3_list.get('href')
                 regex = re.compile(r'[\n\r\t/, ]')
                 pdf_title_re = regex.sub("", h3_list.text) + '.pdf'
-                if re.findall(r'RevenueM | 2014 | Over', pdf_title_re):
-                    pdf_title_re = ""
-
-                    #print(re.search('RevenueM', pdf_title_re).group())
-                else:
-                    pdf_title = pdf_title_re
-                    soup_box.append(pdf_title_re)
-                    # print(pdf_title)
-                    # print(len(pdf_title))
-                # get the last 8 characters of the anchor tag
-                if anchor_tag[23] is not "r" and anchor_tag[-8:] == "download":
-                    lead_domain = "https://www.budgetoffice.gov.ng"
-                    # soup_box.append(lead_domain + anchor_tag)
-                    pdf_file_dwnld = lead_domain + anchor_tag
-                    #anchor_tag = h3_list.get('href')
-                    #soup_box.append(pdf_file_dwnld + pdf_title)
-                # directories
-                fileDir = os.path.abspath(os.path.join(
-                    os.path.dirname('__file__'), '..', 'scrapped-files'))
-                filepath = os.path.join(fileDir, pdf_title)
-                # write to file
-                pdf_file = open(filepath, "wb")
-                pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
-                pdf_file.close()
+                soup_box.append(pdf_title_re)
+                # regex_2 = re.compile('RevenueM | 2014 | Over')
+                # pdf_title_re = list(filter(regex_2.match, pdf_title_re))
+                # print(pdf_title_re)
+                # if re.findall('RevenueM | 2014 | Over', pdf_title_re):
+                #     pdf_title_re = ""
+                #     #print(re.search('RevenueM', pdf_title_re).group())
+                # else:
+                #     pdf_title = pdf_title_re
+                #     soup_box.append(pdf_title_re)
+                #     # print(pdf_title)
+                #     # print(len(pdf_title))
+                # # get the last 8 characters of the anchor tag
+                # if anchor_tag[23] is not "r" and anchor_tag[-8:] == "download":
+                #     lead_domain = "https://www.budgetoffice.gov.ng"
+                #     # soup_box.append(lead_domain + anchor_tag)
+                #     pdf_file_dwnld = lead_domain + anchor_tag
+                #     #anchor_tag = h3_list.get('href')
+                #     #soup_box.append(pdf_file_dwnld + pdf_title)
+                # # directories
+                # fileDir = os.path.abspath(os.path.join(
+                #     os.path.dirname('__file__'), '..', 'scrapped-files'))
+                # filepath = os.path.join(fileDir, pdf_title)
+                # # write to file
+                # pdf_file = open(filepath, "wb")
+                # pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
+                # pdf_file.close()
 # %%
 # directories
 import_files_dir = os.path.join(fileDir, '*.pdf')
@@ -127,4 +130,11 @@ concatenated_csv = pandas.concat(dataframe_from_each_file, ignore_index=True)
 #         tabula.convert_into(pdf_filepath, csv_filepath,
 #                         lattice=True,  output_format="csv", pages="all")
 
+# %%
+# https://stackoverflow.com/questions/3640359/regular-expressions-search-in-list
+# https://stackoverflow.com/questions/24016988/how-to-extract-slug-from-url-with-regular-expression-in-python
+#print(re.search('RevenueM', pdf_title_re).group())
+r = re.compile(r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
+new_list = (r.search, soup_box)
+print(new_list)
 # %%
