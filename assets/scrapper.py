@@ -74,12 +74,66 @@ for pdf_filepath in import_files:
 
 # %%
 # TODO: Merge csv files
+csv_array = []
+fileDir = os.path.abspath(os.path.join(
+    os.path.dirname('__file__'), '..', 'scrapped-files'))
+fileDir_2014 = os.path.join(fileDir, '2014')
 csv_import_files_dir = glob.glob(os.path.join(fileDir, '*.csv'))
+df_from_file = [item for item in csv_import_files_dir]
 
-dataframe_from_each_file = (pandas.read_csv(
-    f, encoding='unicode-escape', error_bad_lines=False) for f in csv_import_files_dir)
+for each_file in df_from_file:
+    csv_merge = pandas.read_csv(each_file, encoding='cp1252')
+    # , sep = ',', encoding = 'unicode_escape', error_bad_lines = False
+    csv_merge['file'] = each_file.split('/')[-1]
+    csv_array.append(csv_merge)
 
-concatenated_csv = pandas.concat(dataframe_from_each_file, ignore_index=True)
+all_merged = pandas.concat(csv_array)
+all_merged.to_csv(os.path.join(fileDir_2014, '2014_budget_raw.csv'))
+
+
+# %%
+limit = [0, 15, 30, 45]
+year_in = 2015
+soup_box = []
+text_box = []
+anchor_tag_box = []
+for each_item in limit:
+    soup = make_soup(
+        f'https://www.budgetoffice.gov.ng/index.php/{year_in}-budget?start={each_item}')
+    # print(soup)
+    for target_list in soup.findAll("div", {"id": "edocman-documents"}):
+        for each_list in target_list.findAll("h3"):
+            for h3_list in each_list.findAll("a"):
+                anchor_tag = h3_list.get('href')
+                html_text = h3_list.text
+                regex = re.compile(r'[\n\r\t/, ]')
+                pdf_title_re = (regex.sub("", html_text) + f'{year_in}.pdf')
+                # text_box.append(pdf_title_re)
+                anchor_tag_box.append(anchor_tag)
+
+                # lead_domain = "https://www.budgetoffice.gov.ng"
+                # pdf_file_dwnld = lead_domain + anchor_tag
+                if re.findall(r'(Prices|^2015|Over|Consolidated)', str(pdf_title_re)):
+                    pdf_title_re = ""
+                else:
+                    pdf_title = pdf_title_re
+                    soup_box.append(pdf_title_re)
+
+                # if re.findall(r'(service/|/rev|t/2014|t/over)', str(anchor_tag)):
+                #     anchor_tag = ""
+                # else:
+                #     anchor_tag_new = anchor_tag
+                #     lead_domain = "https://www.budgetoffice.gov.ng"
+                #     pdf_file_dwnld = lead_domain + anchor_tag_new
+                #     anchor_tag_box.append(pdf_file_dwnld)
+                # Directories
+                # fileDir = os.path.abspath(os.path.join(
+                #     os.path.dirname('__file__'), '..', 'scrapped-files'))
+                # filepath = os.path.join(fileDir, pdf_title_re)
+                # # write to file
+                # pdf_file = open(filepath, "wb")
+                # pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
+                # pdf_file.close()
 # %%
 # soup_bowl = []
 # years_s = [2014, 2015, 2016]
@@ -139,4 +193,10 @@ concatenated_csv = pandas.concat(dataframe_from_each_file, ignore_index=True)
 # r = re.compile('(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
 # new_list = re.sub(r, '', str(soup_box))
 # print(new_list)
+# %%
+# r = re.compile(r'(service/|/consol|t/over)')
+newlist = re.findall(
+    r'(-analysis/|/consol|t/over|/2015-a|t/prices)', str(anchor_tag_box))
+# list(filter(r.match, str(anchor_tag_box)))
+print(newlist)
 # %%
