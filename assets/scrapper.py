@@ -24,6 +24,8 @@ def make_soup(url):
 # TODO: write regex thst can capture 'RevenueM | 2014 | Over' in pdf_title_re as well as in and plus (r for revenue and ending 'download) in anchor_tag
 limit = [0, 15, 30, 45]
 soup_box = []
+text_box = []
+anchor_tag_box = []
 for each_item in limit:
     soup = make_soup(
         f'https://www.budgetoffice.gov.ng/index.php/2014-budget?start={each_item}')
@@ -32,9 +34,14 @@ for each_item in limit:
         for each_list in target_list.findAll("h3"):
             for h3_list in each_list.findAll("a"):
                 anchor_tag = h3_list.get('href')
+                html_text = h3_list.text
                 regex = re.compile(r'[\n\r\t/, ]')
-                pdf_title_re = regex.sub("", h3_list.text) + '.pdf'
-                soup_box.append(pdf_title_re)
+                pdf_title_re = (regex.sub("", html_text) + '.pdf')
+                text_box.append(pdf_title_re)
+                anchor_tag_box.append(anchor_tag)
+
+                #lead_domain = "https://www.budgetoffice.gov.ng"
+
                 # regex_2 = re.compile('RevenueM | 2014 | Over')
                 # pdf_title_re = list(filter(regex_2.match, pdf_title_re))
                 # print(pdf_title_re)
@@ -61,6 +68,38 @@ for each_item in limit:
                 # pdf_file = open(filepath, "wb")
                 # pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
                 # pdf_file.close()
+# %%
+regex_rev = re.compile(
+    r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
+new_new_list = list(filter(regex_rev.match, soup_box))
+req_pdf_titles = [b for b in soup_box if all(
+    a not in b for a in new_new_list)]
+print(req_pdf_titles)
+
+
+# %%
+anchor_full_url = []
+slug_sought = re.findall(
+    r'(service/|/rev|t/2014|t/over)', str(anchor_tag_box))
+slug_found = [b for b in anchor_tag_box if all(
+    a not in b for a in slug_sought)]
+
+for target_list in slug_found:
+    lead_domain = "https://www.budgetoffice.gov.ng"
+    pdf_file_dwnld = lead_domain + target_list
+    anchor_full_url.append(pdf_file_dwnld)
+
+file_to_save = req_pdf_titles+anchor_full_url
+# %%
+for target_list in req_pdf_titles:
+    fileDir = os.path.abspath(os.path.join(
+        os.path.dirname('__file__'), '..', 'scrapped-files'))
+    filepath = os.path.join(fileDir, target_list)
+    # write to file
+    for each_file in anchor_full_url:
+        pdf_file = open(filepath, "wb")
+        pdf_file.write(urllib.request.urlopen(each_file).read())
+        pdf_file.close()
 # %%
 # directories
 import_files_dir = os.path.join(fileDir, '*.pdf')
@@ -134,7 +173,32 @@ concatenated_csv = pandas.concat(dataframe_from_each_file, ignore_index=True)
 # https://stackoverflow.com/questions/3640359/regular-expressions-search-in-list
 # https://stackoverflow.com/questions/24016988/how-to-extract-slug-from-url-with-regular-expression-in-python
 #print(re.search('RevenueM', pdf_title_re).group())
-r = re.compile(r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
-new_list = (r.search, soup_box)
-print(new_list)
+# r = re.compile('(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
+# new_list = re.sub(r, '', str(soup_box))
+# print(new_list)
+# %%
+regex_rev = re.compile(
+    r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
+new_new_list = list(filter(regex_rev.match, soup_box))
+print(new_new_list)
+# %%
+# https://www.geeksforgeeks.org/python-filter-a-list-based-on-the-given-list-of-strings/
+what_is_sought = [b for b in soup_box if all(a not in b for a in new_new_list)]
+print(what_is_sought)
+# %%
+#parsed = urllib.parse.urlparse(anchor_tag_box)
+
+
+def parse_url(url_array):
+    for target_list in url_array:
+        parsed = urllib.parse.urlparse(target_list).path
+        print(parsed)
+
+
+# %%
+parsed = parse_url(anchor_tag_box)
+# %%
+#regex_slug = re.compile(r'rev')
+
+
 # %%
