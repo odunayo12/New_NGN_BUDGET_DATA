@@ -69,10 +69,11 @@ for each_item in limit:
                 # pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
                 # pdf_file.close()
 # %%
+
 regex_rev = re.compile(
     r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
-new_new_list = list(filter(regex_rev.match, soup_box))
-req_pdf_titles = [b for b in soup_box if all(
+new_new_list = list(filter(regex_rev.match, text_box))
+req_pdf_titles = [b for b in text_box if all(
     a not in b for a in new_new_list)]
 print(req_pdf_titles)
 
@@ -91,6 +92,10 @@ for target_list in slug_found:
 
 file_to_save = req_pdf_titles+anchor_full_url
 # %%
+# fileDir = os.path.abspath(os.path.join(
+#     os.path.dirname('__file__'), '..', 'scrapped-files'))
+# file_name = (x for x in str(req_pdf_titles))
+# filepath = os.path.join(fileDir, str(file_name))
 for target_list in req_pdf_titles:
     fileDir = os.path.abspath(os.path.join(
         os.path.dirname('__file__'), '..', 'scrapped-files'))
