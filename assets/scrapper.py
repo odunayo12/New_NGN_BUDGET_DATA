@@ -21,7 +21,6 @@ def make_soup(url):
 
 
 # %%
-# TODO: write regex thst can capture 'RevenueM | 2014 | Over' in pdf_title_re as well as in and plus (r for revenue and ending 'download) in anchor_tag
 limit = [0, 15, 30, 45]
 soup_box = []
 text_box = []
@@ -37,74 +36,31 @@ for each_item in limit:
                 html_text = h3_list.text
                 regex = re.compile(r'[\n\r\t/, ]')
                 pdf_title_re = (regex.sub("", html_text) + '.pdf')
-                text_box.append(pdf_title_re)
-                anchor_tag_box.append(anchor_tag)
+                # text_box.append(pdf_title_re)
+                # anchor_tag_box.append(anchor_tag)
 
-                #lead_domain = "https://www.budgetoffice.gov.ng"
+                if re.findall(r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)', str(pdf_title_re)):
+                    pdf_title_re = ""
+                else:
+                    pdf_title = pdf_title_re
+                    soup_box.append(pdf_title_re)
 
-                # regex_2 = re.compile('RevenueM | 2014 | Over')
-                # pdf_title_re = list(filter(regex_2.match, pdf_title_re))
-                # print(pdf_title_re)
-                # if re.findall('RevenueM | 2014 | Over', pdf_title_re):
-                #     pdf_title_re = ""
-                #     #print(re.search('RevenueM', pdf_title_re).group())
-                # else:
-                #     pdf_title = pdf_title_re
-                #     soup_box.append(pdf_title_re)
-                #     # print(pdf_title)
-                #     # print(len(pdf_title))
-                # # get the last 8 characters of the anchor tag
-                # if anchor_tag[23] is not "r" and anchor_tag[-8:] == "download":
-                #     lead_domain = "https://www.budgetoffice.gov.ng"
-                #     # soup_box.append(lead_domain + anchor_tag)
-                #     pdf_file_dwnld = lead_domain + anchor_tag
-                #     #anchor_tag = h3_list.get('href')
-                #     #soup_box.append(pdf_file_dwnld + pdf_title)
-                # # directories
-                # fileDir = os.path.abspath(os.path.join(
-                #     os.path.dirname('__file__'), '..', 'scrapped-files'))
-                # filepath = os.path.join(fileDir, pdf_title)
-                # # write to file
-                # pdf_file = open(filepath, "wb")
-                # pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
-                # pdf_file.close()
-# %%
+                if re.findall(r'(service/|/rev|t/2014|t/over)', str(anchor_tag)):
+                    anchor_tag = ""
+                else:
+                    anchor_tag_new = anchor_tag
+                    lead_domain = "https://www.budgetoffice.gov.ng"
+                    pdf_file_dwnld = lead_domain + anchor_tag_new
+                    anchor_tag_box.append(pdf_file_dwnld)
+                # Directories
+                fileDir = os.path.abspath(os.path.join(
+                    os.path.dirname('__file__'), '..', 'scrapped-files'))
+                filepath = os.path.join(fileDir, pdf_title)
+                # write to file
+                pdf_file = open(filepath, "wb")
+                pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
+                pdf_file.close()
 
-regex_rev = re.compile(
-    r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
-new_new_list = list(filter(regex_rev.match, text_box))
-req_pdf_titles = [b for b in text_box if all(
-    a not in b for a in new_new_list)]
-print(req_pdf_titles)
-
-
-# %%
-anchor_full_url = []
-slug_sought = re.findall(
-    r'(service/|/rev|t/2014|t/over)', str(anchor_tag_box))
-slug_found = [b for b in anchor_tag_box if all(
-    a not in b for a in slug_sought)]
-
-for target_list in slug_found:
-    lead_domain = "https://www.budgetoffice.gov.ng"
-    pdf_file_dwnld = lead_domain + target_list
-    anchor_full_url.append(pdf_file_dwnld)
-
-file_to_save = req_pdf_titles+anchor_full_url
-# %%
-# fileDir = os.path.abspath(os.path.join(
-#     os.path.dirname('__file__'), '..', 'scrapped-files'))
-# file_name = (x for x in str(req_pdf_titles))
-# filepath = os.path.join(fileDir, str(file_name))
-for target_list in req_pdf_titles:
-    fileDir = os.path.abspath(os.path.join(
-        os.path.dirname('__file__'), '..', 'scrapped-files'))
-    filepath = os.path.join(fileDir, target_list)
-    # write to file
-    for each_file in anchor_full_url:
-        pdf_file = open(filepath, "wb")
-        pdf_file.write(urllib.request.urlopen(each_file).read())
-        pdf_file.close()
 # %%
 # directories
 import_files_dir = os.path.join(fileDir, '*.pdf')
@@ -117,10 +73,12 @@ for pdf_filepath in import_files:
                         lattice=True,  output_format="csv", pages="all")
 
 # %%
+# TODO: Merge csv files
 csv_import_files_dir = glob.glob(os.path.join(fileDir, '*.csv'))
 
 dataframe_from_each_file = (pandas.read_csv(
     f, encoding='unicode-escape', error_bad_lines=False) for f in csv_import_files_dir)
+
 concatenated_csv = pandas.concat(dataframe_from_each_file, ignore_index=True)
 # %%
 # soup_bowl = []
@@ -181,29 +139,4 @@ concatenated_csv = pandas.concat(dataframe_from_each_file, ignore_index=True)
 # r = re.compile('(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
 # new_list = re.sub(r, '', str(soup_box))
 # print(new_list)
-# %%
-regex_rev = re.compile(
-    r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)')
-new_new_list = list(filter(regex_rev.match, soup_box))
-print(new_new_list)
-# %%
-# https://www.geeksforgeeks.org/python-filter-a-list-based-on-the-given-list-of-strings/
-what_is_sought = [b for b in soup_box if all(a not in b for a in new_new_list)]
-print(what_is_sought)
-# %%
-#parsed = urllib.parse.urlparse(anchor_tag_box)
-
-
-def parse_url(url_array):
-    for target_list in url_array:
-        parsed = urllib.parse.urlparse(target_list).path
-        print(parsed)
-
-
-# %%
-parsed = parse_url(anchor_tag_box)
-# %%
-#regex_slug = re.compile(r'rev')
-
-
 # %%
