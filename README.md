@@ -14,3 +14,40 @@ I once needed a transparent budget data of Nigeria and found none but some summa
 ## To follow:
 1. Data in MySql format
 2. Detailed Exploratory Analytics and Visualization through blogposts
+
+<br>
+
+| Raw names                   | Processed Names      |
+| --------------------------- | -------------------- |
+| MDA Code                    | table_identifier     |
+| MDA Name                    | table_identifier_MDA |
+| Main MDA Code               | costCenter_Code      |
+| Main MDA Name               | costCenter_Code_MDA  |
+| Expenditure Code            | lineExpCode          |
+| Expenditure                 | lineExpTerm          |
+| Fund Code                   | lineExpCodeLevel1    |
+| Fund                        | lineExpTermLevel1    |
+| Line Expense Code           | lineExpCodeLevel2    |
+| Line Expense                | lineExpTermLevel2    |
+| Line Expense Sub-group Code | lineExpCodeLevel3    |
+| Line Expense Sub-group      | lineExpTermLevel3    |
+| Main Cost Code              | lineExpCodeLevel4    |
+| Main Cost Item              | lineExpTermLevel4    |
+
+
+<br>
+
+```
+📂Data/
+┣📂 finished_sets/
+┃ ┣📂 csv_/
+┃ ┃ ┣ 🧾budget_2018.csv  --------- 2018 Fiscal Budget
+┃ ┃ ┣ 🧾budget_2019.csv  --------- 2019 Fiscal Budget
+┃ ┃ ┣ 🧾budget_2020.csv  --------- 2020 Fiscal Budget
+┃ ┃ ┣ 🧾data_pbi_2020_start.csv
+┃ ┃ ┣ 🧾data_pbi_2020_start_2.csv
+┃ ┃ ┣ 🧾projects_18_19_20.csv
+┃ ┃ ┣ 🧾summary_by_MDA_18_19_20.csv
+┃ ┃ ┗🧾 summary_by_sub_MDA_18_19_20.csv
+
+```
