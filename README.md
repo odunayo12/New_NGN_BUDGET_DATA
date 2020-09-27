@@ -7,17 +7,22 @@ I once needed a transparent budget data of Nigeria and found none but some summa
 2. To provide a locally accessible data for data-analyst enthusiasts.
 
 ## Files and Folders
-* **/Budget_Data** contains budget data for each year from 2018 to 2020
-* **/assets** contains the data wrangling or data cleaning scripts
-
-
-## To follow:
-1. Data in MySql format
-2. Detailed Exploratory Analytics and Visualization through blogposts
+```
+📂Budget_Data/ 
+┣📂database/ --------- Sample Schema for database  
+┃ ┣🧾budget_18_19_20.sql
+┃ ┣🧾mda-lookup.sql
+┃ ┗🧾sub_mda_lookup.sql
+┣🧾budget_2018.csv --------- 2018 Fiscal Budget
+┣🧾budget_2019.csv --------- 2019 Fiscal Budget
+┗🧾budget_2020.csv --------- 2020 Fiscal Budget
+```
 
 <br>
 
-| Raw names                   | Processed Names      |
+## Factory Name Setting 😉
+```
+| Processed names             | Raw  Names           |
 | --------------------------- | -------------------- |
 | MDA Code                    | table_identifier     |
 | MDA Name                    | table_identifier_MDA |
@@ -33,21 +38,9 @@ I once needed a transparent budget data of Nigeria and found none but some summa
 | Line Expense Sub-group      | lineExpTermLevel3    |
 | Main Cost Code              | lineExpCodeLevel4    |
 | Main Cost Item              | lineExpTermLevel4    |
-
-
+```
 <br>
 
-```
-📂Data/
-┣📂 finished_sets/
-┃ ┣📂 csv_/
-┃ ┃ ┣ 🧾budget_2018.csv  --------- 2018 Fiscal Budget
-┃ ┃ ┣ 🧾budget_2019.csv  --------- 2019 Fiscal Budget
-┃ ┃ ┣ 🧾budget_2020.csv  --------- 2020 Fiscal Budget
-┃ ┃ ┣ 🧾data_pbi_2020_start.csv
-┃ ┃ ┣ 🧾data_pbi_2020_start_2.csv
-┃ ┃ ┣ 🧾projects_18_19_20.csv
-┃ ┃ ┣ 🧾summary_by_MDA_18_19_20.csv
-┃ ┃ ┗🧾 summary_by_sub_MDA_18_19_20.csv
-
-```
+## To follow:
+1. - [ ] Data in MySql format
+2. - [ ] Detailed Exploratory Analytics and Visualization through blogposts
