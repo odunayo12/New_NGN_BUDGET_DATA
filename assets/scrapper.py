@@ -1,9 +1,9 @@
 # %%
 import glob
 import tabula
-#import urllib
+import urllib
 import urllib.request
-import urllib3
+#import urllib3
 from bs4 import BeautifulSoup
 import os
 import json
@@ -17,12 +17,23 @@ import copy
 
 
 def make_soup(url):
-    #the_page = urllib.request.urlopen(url)
-    the_page = urllib3.PoolManager().request('GET', url)
+    the_page = urllib.request.urlopen(url)
+    #the_page = urllib3.PoolManager().request('GET', url)
     #res = req.request('GET', url)
     #soup_data = BeautifulSoup(the_page)
     soup_data = BeautifulSoup(the_page, 'html.parser')
     return soup_data
+
+
+def save_file(pdf_name, download_url):
+    # Directories
+    fileDir = os.path.abspath(os.path.join(
+        os.path.dirname('__file__'), '..', 'scrapped-files'))
+    filepath = os.path.join(fileDir, pdf_name)
+    # write to file
+    pdf_file = open(filepath, "wb")
+    pdf_file.write(urllib.request.urlopen(download_url).read())
+    pdf_file.close()
 
 
 # %%
@@ -44,27 +55,32 @@ for each_item in limit:
                 # text_box.append(pdf_title_re)
                 # anchor_tag_box.append(anchor_tag)
 
-                if re.findall(r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)', str(pdf_title_re)):
+                if re.findall(r'(RevenueM|2014|Over|StatutoryTransfersDebtService.pdf$)', str(pdf_title_re)) or re.findall(r'(service/|/rev|t/2014|t/over)', str(anchor_tag)):
                     pdf_title_re = ""
-                else:
-                    pdf_title = pdf_title_re
-                    soup_box.append(pdf_title)
-
-                if re.findall(r'(service/|/rev|t/2014|t/over)', str(anchor_tag)):
                     anchor_tag = ""
                 else:
+                    pdf_title_work = pdf_title_re
+                    # soup_box.append(pdf_title)
                     anchor_tag_new = anchor_tag
                     lead_domain = "https://www.budgetoffice.gov.ng"
                     pdf_file_dwnld = lead_domain + anchor_tag_new
                     anchor_tag_box.append(pdf_file_dwnld)
-                # Directories
-                fileDir = os.path.abspath(os.path.join(
-                    os.path.dirname('__file__'), '..', 'scrapped-files'))
-                filepath = os.path.join(fileDir, pdf_title)
-                # write to file
-                pdf_file = open(filepath, "wb")
-                pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
-                pdf_file.close()
+
+                # # if re.findall(r'(service/|/rev|t/2014|t/over)', str(anchor_tag)):
+                # #     anchor_tag = ""
+                # # else:
+                # #     anchor_tag_new = anchor_tag
+                # #     lead_domain = "https://www.budgetoffice.gov.ng"
+                # #     pdf_file_dwnld = lead_domain + anchor_tag_new
+                # #     anchor_tag_box.append(pdf_file_dwnld)
+                # # Directories
+                # fileDir = os.path.abspath(os.path.join(
+                #     os.path.dirname('__file__'), '..', 'scrapped-files'))
+                # filepath = os.path.join(fileDir, pdf_title_work)
+                # # write to file
+                # pdf_file = open(filepath, "wb")
+                # pdf_file.write(urllib.request.urlopen(pdf_file_dwnld).read())
+                # pdf_file.close()
 
 # %%
 # directories
@@ -147,6 +163,7 @@ limit = [0, 15, 30, 45]
 soup_box = []
 text_box = []
 anchor_tag_box = []
+anchor_tag_box_2 = []
 for each_year in years_s:
     for each_item in limit:
         if each_year != 2017:
@@ -165,21 +182,31 @@ for each_year in years_s:
                         # print(pdf_title_re)
 
                         text_box.append(pdf_title_re)
-                        anchor_tag_box.append(anchor_tag)
+                        anchor_tag_box_2.append(anchor_tag)
 
-                        # if re.findall(r'(?<=Rev|Sta)[a-zA-Z]+(e|n)2014|(?<=2014)\w+|(?<=2015|2016)App|Total|BudgetandtheStrategicI', str(pdf_title_re)):
-                        #     pdf_title_re = ""
-                        # else:
-                        #     pdf_title = pdf_title_re
-                        #     soup_box.append(pdf_title)
+                        if re.findall(r'(?<=Rev|Sta)[a-zA-Z]+(e|n)_2014|(?<=2014)\w+|(?<=2015|2016)App|Total|BudgetandtheStrategicI', str(pdf_title_re)):
+                            pdf_title_re = ""
+                        else:
+                            pdf_title_re = pdf_title_re
+                            soup_box.append(pdf_title_re)
+                            print(len(pdf_title_re))
 
-                        # if re.findall(r'(?<=/index.php/(2014|2015|2016)-budget/)overv|prices|approp|analysis|consol', str(anchor_tag)):
-                        #     anchor_tag = ""
-                        # else:
-                        #     anchor_tag_new = anchor_tag
-                        #     lead_domain = "https://www.budgetoffice.gov.ng"
-                        #     pdf_file_dwnld = lead_domain + anchor_tag_new
-                        #     anchor_tag_box.append(pdf_file_dwnld)
+                        if re.findall(r'(?<=/index.php/(2014|2015|2016)-budget/)overv|prices|approp|analysis|consol', str(anchor_tag)):
+                            anchor_tag = ""
+                        else:
+                            anchor_tag_new = anchor_tag
+                            lead_domain = "https://www.budgetoffice.gov.ng"
+                            pdf_file_dwnld = lead_domain + anchor_tag_new
+                            anchor_tag_box.append(pdf_file_dwnld)
+                        # Directories
+                        fileDir = os.path.abspath(os.path.join(
+                            os.path.dirname('__file__'), '..', 'scrapped-files'))
+                        filepath = os.path.join(fileDir, pdf_title_re)
+                        # write to file
+                        pdf_file = open(filepath, "wb")
+                        pdf_file.write(urllib.request.urlopen(
+                            pdf_file_dwnld).read())
+                        pdf_file.close()
         # elif each_year==2017:
         #     soup = make_soup(
         #         f'https://www.budgetoffice.gov.ng/index.php/{each_year}-approved-budget?start={each_item}')
@@ -258,14 +285,14 @@ for each_year in years_s:
 # 2014
 # ^(RevenueM|Statutory)[a-zA-Z]2014.pdf$
 newlist = re.findall(
-    r'(?<=Rev|Sta)[a-zA-Z]+(e|n)2014|(?<=2014)\w+|(?<=2015|2016)App|Total|BudgetandtheStrategicI', str(text_box))
+    r'(?<=Rev|Sta)[a-zA-Z]+(e|n)_2014|(?<=2014)\w+|(?<=2015|2016)App|Total|BudgetandtheStrategicI', str(text_box))
 # list(filter(r.match, str(anchor_tag_box)))
 print(len(newlist))
 print(newlist)
 
 
 newlist_2 = re.findall(
-    r'(?<=/index.php/(2014|2015|2016)-budget/)overv|prices|approp|analysis|consol', str(anchor_tag_box))
+    r'(?<=/index.php/(2014|2015|2016)-budget/)overv|prices|approp|analysis|consol', str(anchor_tag_box_2))
 # list(filter(r.match, str(anchor_tag_box)))
 print(len(newlist_2))
 print(newlist_2)
