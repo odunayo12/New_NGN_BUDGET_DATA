@@ -1,8 +1,9 @@
 # %%
 import glob
 import tabula
-import urllib
+#import urllib
 import urllib.request
+import urllib3
 from bs4 import BeautifulSoup
 import os
 import json
@@ -16,7 +17,10 @@ import copy
 
 
 def make_soup(url):
-    the_page = urllib.request.urlopen(url)
+    #the_page = urllib.request.urlopen(url)
+    the_page = urllib3.PoolManager().request('GET', url)
+    #res = req.request('GET', url)
+    #soup_data = BeautifulSoup(the_page)
     soup_data = BeautifulSoup(the_page, 'html.parser')
     return soup_data
 

@@ -25,6 +25,7 @@ I once needed a transparent budget data of Nigeria and found none but some summa
 <br>
 
 ## Factory Name Setting 😉
+```
 
 | Processed names             | Raw  Names           |
 | --------------------------- | -------------------- |
@@ -43,7 +44,7 @@ I once needed a transparent budget data of Nigeria and found none but some summa
 | Main Cost Code              | lineExpCodeLevel4    |
 | Main Cost Item              | lineExpTermLevel4    |
 
-
+```
 <br>
 
 ## To follow:
