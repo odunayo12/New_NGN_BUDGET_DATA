@@ -43,4 +43,4 @@ I once needed a transparent budget data of Nigeria and found none but some summa
 
 ## To follow:
 1. - [ ] Data in MySql format
-2. - [ ] Detailed Exploratory Analytics and Visualization through blogposts
+2. - [ ] Detailed Exploratory Analytics and Visualization through blogposts *(open to collaboration)*
