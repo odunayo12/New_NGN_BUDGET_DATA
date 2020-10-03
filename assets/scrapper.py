@@ -36,6 +36,26 @@ def save_file(pdf_name, download_url):
     pdf_file.close()
 
 
+def extract_id(div_id):
+    for target_list in div_id:
+        for each_list in target_list.findAll("h3"):
+            for h3_list in each_list.findAll("a"):
+                anchor_tag = h3_list.get('href')
+                html_text = h3_list.text
+                anchor_tag_year = anchor_tag[11:15]
+                soup_bowl.append(anchor_tag_year)
+                regex = re.compile(r'[\n\r\t/, ]')
+                pdf_title_re = (
+                    regex.sub("", html_text) + f'_{anchor_tag_year}.pdf')
+                # print(pdf_title_re)
+
+                text_box.append(pdf_title_re)
+                anchor_tag_box_2.append(anchor_tag)
+                return pdf_title_re, anchor_tag
+
+
+# for name in glob.glob(os.path.join(fileDir, '*_[0-9]*.pdf')):
+    # print(name)
 # %%
 limit = [0, 15, 30, 45]
 soup_box = []
@@ -168,9 +188,11 @@ anchor_tag_box = []
 anchor_tag_box_2 = []
 for each_year in years_s:
     for each_item in limit:
-        if each_year != 2017:
+        if each_year == 2014:
             soup = make_soup(
                 f'https://www.budgetoffice.gov.ng/index.php/{each_year}-budget?start={each_item}')
+            # soup_div_id = soup.findAll("div", {"id": "edocman-documents"})
+            # extract_id(soup_div_id)
             for target_list in soup.findAll("div", {"id": "edocman-documents"}):
                 for each_list in target_list.findAll("h3"):
                     for h3_list in each_list.findAll("a"):
@@ -185,40 +207,11 @@ for each_year in years_s:
 
                         text_box.append(pdf_title_re)
                         anchor_tag_box_2.append(anchor_tag)
-
-                        if re.findall(r'(?<=Rev|Sta)[a-zA-Z]+(e|n)_2014|(?<=2014)\w+|(?<=2015|2016)App|Total|BudgetandtheStrategicI|FederalMinistryofTourismCulture&NOA2015', str(pdf_title_re)) or re.findall(r'(?<=/index.php/(2014|2015|2016)-budget/)overv|prices|approp|analysis|consol|culture-noa-2015', str(anchor_tag)):
-                            pdf_title_re = ""
-                            anchor_tag = ""
-                        else:
-                            pdf_title_work = pdf_title_re
-                            soup_box.append(pdf_title_re)
-                            # print(len(pdf_title_work))
-                            anchor_tag_new = anchor_tag
-                            lead_domain = "https://www.budgetoffice.gov.ng"
-                            pdf_file_dwnld = lead_domain + anchor_tag_new
-                            anchor_tag_box.append(pdf_file_dwnld)
-                         # save pdf files
-                        save_file(pdf_title_work, pdf_file_dwnld)
-        else:
-            soup = make_soup(
-                f'https://www.budgetoffice.gov.ng/index.php/{each_year}-approved-budget?start={each_item}')
-            # soup.append(copy.copy(soup_2))
-            # soup_box.append(soup.append(copy.copy(soup_2)))
-            for target_list in soup.findAll("div", {"id": "edocman-documents"}):
-                for each_list in target_list.findAll("h3"):
-                    for h3_list in each_list.findAll("a"):
-                        anchor_tag = h3_list.get('href')
-                        html_text = h3_list.text
-                        anchor_tag_year = anchor_tag[11:15]
-                        soup_bowl.append(anchor_tag_year)
-                        regex = re.compile(r'[\n\r\t/, ]')
-                        pdf_title_re = (
-                            regex.sub("", html_text) + f'_{anchor_tag_year}.pdf')
-                        # print(pdf_title_re)
-                        text_box.append(pdf_title_re)
-                        anchor_tag_box_2.append(anchor_tag)
-
-                        if re.findall(r'(2017App)', str(pdf_title_re)) or re.findall(r'(t/2017-a)', str(anchor_tag)):
+                        title_pattern = re.compile(
+                            r'(?<=Rev|Sta)[a-zA-Z]+(e|n)_2014|(?<=2014)\w+|(?<=2015|2016)App|Total|BudgetandtheStrategicI|FederalMinistryofTourismCulture&NOA2015')
+                        anchor_pattern = re.compile(
+                            r'(?<=/index.php/(2014|2015|2016)-budget/)overv|prices|approp|analysis|consol|culture-noa-2015')
+                        if re.findall(title_pattern, str(pdf_title_re)) or re.findall(anchor_pattern, str(anchor_tag)):
                             pdf_title_re = ""
                             anchor_tag = ""
                         else:
@@ -231,6 +224,38 @@ for each_year in years_s:
                             anchor_tag_box.append(pdf_file_dwnld)
                         # save pdf files
                         save_file(pdf_title_work, pdf_file_dwnld)
+        # else:
+        #     soup = make_soup(
+        #         f'https://www.budgetoffice.gov.ng/index.php/{each_year}-approved-budget?start={each_item}')
+        #     # soup.append(copy.copy(soup_2))
+        #     # soup_box.append(soup.append(copy.copy(soup_2)))
+        #     for target_list in soup.findAll("div", {"id": "edocman-documents"}):
+        #         for each_list in target_list.findAll("h3"):
+        #             for h3_list in each_list.findAll("a"):
+        #                 anchor_tag = h3_list.get('href')
+        #                 html_text = h3_list.text
+        #                 anchor_tag_year = anchor_tag[11:15]
+        #                 soup_bowl.append(anchor_tag_year)
+        #                 regex = re.compile(r'[\n\r\t/, ]')
+        #                 pdf_title_re = (
+        #                     regex.sub("", html_text) + f'_{anchor_tag_year}.pdf')
+        #                 # print(pdf_title_re)
+        #                 text_box.append(pdf_title_re)
+        #                 anchor_tag_box_2.append(anchor_tag)
+
+        #                 if re.findall(r'(2017App)', str(pdf_title_re)) or re.findall(r'(t/2017-a)', str(anchor_tag)):
+        #                     pdf_title_re = ""
+        #                     anchor_tag = ""
+        #                 else:
+        #                     pdf_title_work = pdf_title_re
+        #                     soup_box.append(pdf_title_re)
+        #                     # print(len(pdf_title_work))
+        #                     anchor_tag_new = anchor_tag
+        #                     lead_domain = "https://www.budgetoffice.gov.ng"
+        #                     pdf_file_dwnld = lead_domain + anchor_tag_new
+        #                     anchor_tag_box.append(pdf_file_dwnld)
+        #                 # save pdf files
+        #                 save_file(pdf_title_work, pdf_file_dwnld)
 
 
 # %%
