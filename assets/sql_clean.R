@@ -89,9 +89,21 @@ codes_n_meaning_table <-
 all_year_sql <- all_year %>% 
   select(!contains('Term'), -table_identifier_MDA, lineExpTerm, lineExpTermLevel1)%>%
   view()
+#### Filter for MDAs -------------------------------------
+MDA_distr_by_year <- all_year %>% 
+  group_by(Year, table_identifier) %>% 
+  select(Year, costCenter_Code, costCenter_Code_MDA, table_identifier, table_identifier_MDA)
+json_MDA_distr_by_year <- toJSON(MDA_distr_by_year)
+cat(json_MDA_distr_by_year)
+#write(json_MDA_distr_by_year, "Budget_Data/summary/mda_by_year.json")
+write_csv(MDA_distr_by_year, "Budget_Data/summary/mda_by_year.csv")
 #save-----------------------------------------------------------------------
 write_csv(all_year, 'Data/sql_/all_year.csv')
 write_csv(MDA_lookup, 'Data/sql_/MDA_lookup.csv')
 write_csv(sub_MDA_lookup, 'Data/sql_/sub_MDA_lookup.csv')
 write_csv(all_year_sql, 'Data/sql_/all_year_sql.csv')
 write_csv(codes_n_meaning_table, 'Data/sql_/codes_n_meaning_table.csv')
+write_csv(check_data_pbi_2018, "Budget_Data/summary/2018_summary_by_MDA")
+write_csv(check_data_pbi_2019_start_2, "Budget_Data/summary/2019_summary_by_MDA")
+write_csv(check_data_pbi_2020, "Budget_Data/summary/2020_summary_by_MDA")
+
