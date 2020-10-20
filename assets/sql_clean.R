@@ -90,9 +90,12 @@ all_year_sql <- all_year %>%
   select(!contains('Term'), -table_identifier_MDA, lineExpTerm, lineExpTermLevel1)%>%
   view()
 #### Filter for MDAs -------------------------------------
-MDA_distr_by_year <- all_year %>% 
-  group_by(Year, table_identifier) %>% 
-  select(Year, costCenter_Code, costCenter_Code_MDA, table_identifier, table_identifier_MDA)
+MDA_distr_by_year <- 
+  all_year %>% 
+  group_by(Year, costCenter_Code, costCenter_Code_MDA, table_identifier, table_identifier_MDA) %>% 
+  summarise() %>%view()
+
+
 json_MDA_distr_by_year <- toJSON(MDA_distr_by_year)
 cat(json_MDA_distr_by_year)
 #write(json_MDA_distr_by_year, "Budget_Data/summary/mda_by_year.json")
@@ -107,3 +110,23 @@ write_csv(check_data_pbi_2018, "Budget_Data/summary/2018_summary_by_MDA")
 write_csv(check_data_pbi_2019_start_2, "Budget_Data/summary/2019_summary_by_MDA")
 write_csv(check_data_pbi_2020, "Budget_Data/summary/2020_summary_by_MDA")
 
+
+
+hierarchy1_mda <- MDA_distr_by_year %>% 
+  ungroup() %>% 
+  distinct(Year) %>% 
+  select(Year) %>% view()
+
+
+level1_mda <- MDA_distr_by_year %>% 
+  ungroup() %>% 
+  group_by(costCenter_Code, costCenter_Code_MDA) %>% 
+  summarise() %>% view()
+  
+  
+level2_mda <- MDA_distr_by_year %>% 
+  ungroup() %>% 
+  group_by(table_identifier, table_identifier_MDA) %>% 
+  summarise() %>% view()
+
+distinct_all(all_year) %>% view()

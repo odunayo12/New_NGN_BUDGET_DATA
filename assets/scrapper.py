@@ -295,26 +295,29 @@ csv_import_files_dir = glob.glob(os.path.join(fileDir, '*.csv'))
 df_from_file = [item for item in csv_import_files_dir]
 
 # directories
-for each_file_year in years_s:
-    if regex == each_file_year:
-        fileDir_2014 = os.path.join(fileDir, 'each_file_year')
+# for each_file_year in years_s:
+#     #if regex == each_file_year:
+#         fileDir_2014 = os.path.join(fileDir, str(each_file_year))
+#         print(fileDir_2014)
 
 for each_file_year in years_s:
     for each_file in df_from_file:
+        fileDir_2014 = os.path.join(fileDir, str(each_file_year))
         # split("\\")[8].split("_")[1][:4] gets year, equv .rsplit("_", 1)[1][:4]
-        if each_file.rsplit("_", 1)[1][:4] == each_file_year:
+        if each_file.rsplit("_", 1)[1][:4] == str(each_file_year):
             csv_merge = pandas.read_csv(each_file, encoding='cp1252')
             # , sep = ',', encoding = 'unicode_escape', error_bad_lines = False
             csv_merge['file'] = each_file.split('/')[-1]
             csv_array.append(csv_merge)
 
-for each_file_year in years_s:
-    if regex == each_file_year:
-        fileDir_2014 = os.path.join(fileDir, 'each_file_year')
-for each_merged_array in csv_merge:
-    all_merged = pandas.concat(each_merged_array)
-    all_merged.to_csv(os.path.join(fileDir_2014,
-                                   f'{each_file_year}_budget_raw.csv'))
+
+# for each_file_year in years_s:
+#     if regex == each_file_year:
+#         fileDir_2014 = os.path.join(fileDir, 'each_file_year')
+# for each_merged_array in csv_merge:
+#     all_merged = pandas.concat(each_merged_array)
+#     all_merged.to_csv(os.path.join(fileDir_2014,
+#                                    f'{each_file_year}_budget_raw.csv'))
 
 # %%
 # TODO: Merge csv files
