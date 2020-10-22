@@ -1,6 +1,6 @@
 library(tidyverse)
 
-#TODO inspect table_identifier, table_identifier_MDA if correct, else use subCostCenterSum_Code to pull respective MDA and sub MDA from MDA_Table
+#TODO inspect table_identifier, table_identifier_MDA if correct, else use subCostCenterSum_Code to pull respective MDA and sub MDA from MDA_Table------------
 budget_18_19_20 <-
   rbind(data_pbi_2018, data_pbi_2019_start, data_pbi_2020_start)
 
@@ -28,16 +28,16 @@ projects_Unique <- as_tibble(budget_18_19_20) %>%
 # across() selects specified columns
 # distinct(projectCode, across(table_identifier:Amount))
 
-#project section of the budget from 2018-2020
+#project section of the budget from 2018-2020--------------------------
 projects_18_19_20 <- rbind(projects_Unique, output2019_clean) %>%
   mutate(id = str_c(Year, projectCode))
 
 write_csv(projects_18_19_20,
-          'Data/finished_sets/csv_/projects_18_19_20.csv')
+          'Budget_Data/projects_18_19_20.csv')
 
 
 
-#overview by MDAs
+#overview by MDAs----------------
 summary_by_MDA  <-
   budget_18_19_20 %>% filter(
     str_length(Data.Column2) == 3 &
@@ -59,7 +59,7 @@ summary_by_MDA  <-
 write_csv(summary_by_MDA,
           'Data/finished_sets/csv_/summary_by_MDA_18_19_20.csv')
 
-#overview by sub_MDAs
+#overview by sub_MDAs---------------------
 summary_by_sub_MDA  <-
   budget_18_19_20 %>% filter(
     !is.na(Data.Column3)  &
