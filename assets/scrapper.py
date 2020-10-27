@@ -182,41 +182,40 @@ for each_year in years_s:
                                              pdf_file_dwnld,
                                              each_year)
 
- # %%
-# # TODO: #9 Merge csv files
-# csv_array = []
-# years_s = [2014, 2015, 2016, 2017]
-# for each_year in years_s:
-#     fileDir = os.path.abspath(os.path.join(
-#         os.path.dirname('__file__'),
-#         '..',
-#         'scrapped-files',
-#         str(each_year)))
-#     # print(fileDir)
-#     pdf_import_files_dir = glob.glob(os.path.join(fileDir, '*.pdf'))
-#     # print(pdf_import_files_dir)
-#     #df_from_file = [item for item in pdf_import_files_dir]
-#     # print(len(df_from_file))
-#     print(len(pdf_import_files_dir))
-#     for pdf_file_path in pdf_import_files_dir:
-#         csv_file_path = pdf_file_path.replace('.pdf', '.csv')
-#         tabula.convert_into(pdf_file_path, csv_file_path,
-#                             lattice=True, output_format='csv', pages='all')
+# %%
+# TODO: #9 Merge csv files
+csv_array = []
+for each_year in years_s:
+    fileDir = os.path.abspath(os.path.join(
+        os.path.dirname('__file__'),
+        '..',
+        'scrapped-files',
+        str(each_year)))
+    # print(fileDir)
+    pdf_import_files_dir = glob.glob(os.path.join(fileDir, '*.pdf'))
+    # print(pdf_import_files_dir)
+    #df_from_file = [item for item in pdf_import_files_dir]
+    # print(len(df_from_file))
+    print(len(pdf_import_files_dir))
+    for pdf_file_path in pdf_import_files_dir:
+        csv_file_path = pdf_file_path.replace('.pdf', '.csv')
+        tabula.convert_into(pdf_file_path, csv_file_path,
+                            lattice=True, output_format='csv', pages='all')
 
-#     csv_import_files_dir = glob.glob(os.path.join(fileDir, '*.csv'))
-#     # read csv
-#     for each_csv_dir in csv_import_files_dir:
-#         if each_csv_dir.rsplit("_", 1)[1][:4] == str(each_year):
-#             csv_merge = pandas.read_csv(
-#                 each_csv_dir, encoding='cp1252', error_bad_lines=False)
-#             # , sep = ',', encoding = 'unicode_escape', error_bad_lines = False
-#             csv_merge['file'] = pdf_file_path.split('/')[-1]
-#             csv_array.append(csv_merge)
-#     # Combine and Save files
-#     for each_csv in csv_array:
-#         all_merged = pandas.concat([each_csv])
-#         all_merged.to_csv(os.path.join(
-#             fileDir, f'{each_year}_budget_raw.csv'))
+    csv_import_files_dir = glob.glob(os.path.join(fileDir, '*.csv'))
+    # read csv
+    for each_csv_dir in csv_import_files_dir:
+        if each_csv_dir.rsplit("_", 1)[1][:4] == str(each_year):
+            csv_merge = pandas.read_csv(
+                each_csv_dir, encoding='cp1252', error_bad_lines=False)
+            # , sep = ',', encoding = 'unicode_escape', error_bad_lines = False
+            csv_merge['file'] = pdf_file_path.split('/')[-1]
+            csv_array.append(csv_merge)
+    # Combine and Save files
+    for each_csv in csv_array:
+        all_merged = pandas.concat([each_csv])
+        all_merged.to_csv(os.path.join(
+            fileDir, f'{each_year}_budget_raw.csv'))
 # %%
 # csv_merge = []
 # for each_year in years_s:
