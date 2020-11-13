@@ -130,6 +130,7 @@ for each_year in years_s:
                             pdf_file_dwnld = lead_domain + anchor_tag_new
                             anchor_tag_box.append(pdf_file_dwnld)
                         # save pdf files
+                        # pyright: reportUnboundVariable=false
                         if pdf_title_work.rsplit("_", 1)[1][:4] == str(each_year):
                             save_file_to_dir(pdf_title_work,
                                              pdf_file_dwnld,
