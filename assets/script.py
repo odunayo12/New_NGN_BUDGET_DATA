@@ -72,3 +72,8 @@ with open(jsonFilePath, 'w') as jsonFile:
 
 
 # %%
+# 2021
+tabula.convert_into(r"..\PDF_Data\2021_BUDGET_PROPOSAL_FINAL.pdf", 'tbl2021_extract.csv', stream=True,
+                    output_format="csv", pages="all")
+
+# %%
