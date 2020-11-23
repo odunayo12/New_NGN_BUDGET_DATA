@@ -1,0 +1,88 @@
+library(tidyverse)
+library(reticulate)
+
+use_python("C:/Users/rotim/anaconda3", required = T)
+repl_python()
+
+#reticulate::py_config()
+
+use_condaenv()
+raw_2021_budget_2021 <-
+  read_csv(
+    "PDF_Data/raw_2021_budget_2021.csv",
+    cols(
+      Id = col_character(),
+      Name = col_character(),
+      Kind = col_character(),
+      Data.Column1 = col_character(),
+      Data.Column2 = col_character(),
+      Data.Column3 = col_character(),
+      Data.Column4 = col_character(),
+      Data.Column5 = col_character(),
+      Data.Column6 = col_character(),
+      Data.Column7 = col_character(),
+      Data.Column8 = col_character(),
+      Data.Column9 = col_character(),
+      Data.Column10 = col_character()
+    )
+  )
+View(raw_2021_budget_2021)
+
+# Cleaning ----------------------------------------------------------------
+head(raw_2021_budget_2021)
+data_col_names = c(colnames(raw_2021_budget_2021))
+raw_2021_budget_2021 %>% group_by(null_col = sum(is.na((Data.Column3))), sum(is.na((Data.Column2))), sum(is.na((Id)))) %>% summarise()
+
+for (col_name in data_col_names) {
+  print (col_name)
+  mutate (raw_2021_budget_2021 %>% group_by(sum(is.na(col_name))) %>% summarise())
+}
+
+
+for (var in names(raw_2021_budget_2021)) {
+  raw_2021_budget_2021 %>% count(is.na(.data[[var]])) %>% print()
+}
+
+
+# Strategy: the data contains
+# Lest make a copy of the original data
+data__2021_start <- raw_2021_budget_2021 
+
+# We inspect our to see the each colum to see how many empty rows they contain. In what follows, `map_dl()` map the datafrme `data__2021_start` in to a vector using an anonymous function 
+# that calculates the percentage of empty record contain in each column. `length()` returns the size of what (`what`) empty (`is.na()`) rows(`(.)`) are contained in each column; mutiplies it by 100 and rounds (`round()`) it to the nearest whole number.
+
+data__2021_start %>% map_dbl(function(x) round(100*length(which(is.na(x)))/length(x))) 
+# 
+# When extracting the tables form Excel, the `Id`, `Name` and `Kind` Columns were automatically created to be used for identifying the table in the pdf that was converted to excel. That affors us an advatage. Since the Id column is serial, we can use it to sort (`arrange()`) our table in such a way that it matchess the order of tables in the original document. And to double check, we also add the column `Data.Column1` to the sort criteria
+data__2021_start%>%
+  arrange(Id, Data.Column1) %>%
+
+data.frame("Column Names"=row.names(t(stmbbyby)), t(stmbbyby), row.names =NULL ) 
+glimpse(supmed)
+
+my_summarise4 <- function(data, expr) {
+  data %>% summarise(#"mean_{{expr}}" := mean({{ expr }}),
+    #"sum_{{expr}}" := sum({{ expr }}),
+    "n_{{expr}}" := sum(is.na({
+      {
+        expr
+      }
+    })))
+}
+
+test__1 = my_summarise4(raw_2021_budget_2021, data_col_names)
+
+
+for (var in names(raw_2021_budget_2021)) {
+  raw_2021_budget_2021 %>% sum(is.na(.data[[var]])) %>% print()
+}
+
+# https://dplyr.tidyverse.org/articles/programming.html
+my_summarise <- function(.data, ...) {
+  .data %>%
+    group_by(...) %>%
+    summarise(null_col = sum(mass), height = mean(height, na.rm = TRUE))
+}
+
+map_dbl(raw_2021_budget_2021, ~ length(which(is.na(.x))))
+

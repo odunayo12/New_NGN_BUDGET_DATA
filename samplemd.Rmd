@@ -1,0 +1,51 @@
+---
+title: "Cleaning Nigeria Budget Data"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, python.reticulate = T}
+```
+
+
+```{r, python.reticulate = T}
+# for y in [1, 2, 3]:
+#   print(y)
+```
+
+##Read the data
+```{r , echo=T}
+library(tidyverse)
+raw_2021_budget_2021 <-
+  read_csv(
+    "PDF_Data/raw_2021_budget_2021.csv"
+  )
+raw_2021_budget_2021
+```
+
+## Overiew
+Let's make a copy of the original data
+```{r}
+data__2021_start <- raw_2021_budget_2021 
+```
+
+### Inspection
+We inspect our to see the each colum to see how many empty rows they contain. In what follows, `map_dl()` map the datafrme `data__2021_start` in to a vector using an anonymous function 
+that calculates the percentage of empty record contain in each column. `length()` returns the size of what (`which()`) empty (`is.na()`) rows(`(.)`) are contained in each column; mutiplies it by 100 and rounds (`round()`) it to the nearest whole number.
+```{r}
+data__2021_start %>% map_dbl(function(x) round(100*length(which(is.na(x)))/length(x))) 
+```
+This shows that bulk of the data is in `Data.Column1`, `Data.Column2` and `Data.Column3` since they contain just 11%, 1% and 6% null rows respectively.
+
+When extracting the tables form Excel, the `Id`, `Name` and `Kind` Columns were automatically created to be used for identifying the table in the pdf that was converted to excel. That affors us an advatage. Since the Id column is serial, we can use it to sort (`arrange()`) our table in such a way that it matches the order of tables in the original document. And to double check, we also add the column `Data.Column1` to the sort criteria.
+
+```{r}
+data__2021_start %>% arrange(Id, Data.Column1)
+```
+
+Next the granularity of this dataset lies in the expenses column Satrting with 2 and incresing. Our strategy will be to create a new cloumn for the desired entries.
+
