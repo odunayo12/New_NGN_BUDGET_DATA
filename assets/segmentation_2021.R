@@ -1,5 +1,6 @@
 library(tidyverse)
 library(reticulate)
+library(collapsibleTree)
 options(dplyr.summarise.inform = FALSE)
 use_python("C:/Users/rotim/anaconda3", required = T)
 repl_python()
@@ -108,6 +109,7 @@ MDA_Table_2021 <- data__2021_start %>%
 data__2021_test <- data__2021_start %>%
   select(-(Id:Kind), -(Data.Column4:Data.Column10)) %>%
   mutate(
+    Data.Column1 = if_else(str_detect(Data.Column2, "TOTAL RETAINED"), "07", Data.Column1),
     table_identifier = case_when(
       #dectects any figure from 0-9 in a column
       str_detect(Data.Column1, "^[0-9]") &
@@ -120,36 +122,51 @@ data__2021_test <- data__2021_start %>%
     Code = str_sub(table_identifier, end = 4),
     lineExpCode = case_when(
       Data.Column1 == "2" &
-        str_detect(Data.Column2, "^EXP{1}") ~ Data.Column1
+        str_detect(Data.Column2, "^EXP{1}") |
+        Data.Column1 == "07" &
+        str_detect(Data.Column2, "TOTAL RETAINED") ~ Data.Column1
     ),
-    lineExpTerm = case_when(!is.na(lineExpCode) ~ Data.Column2),
+    lineExpTerm = case_when(
+      !is.na(lineExpCode) ~ Data.Column2,
+      Data.Column1 == "07" ~ Data.Column2
+    ),
     lineExpCodeLevel1 = case_when(
       str_detect(Data.Column1, "21|22|23|24") &
         str_length(Data.Column1) == 2 &
-        str_length(Data.Column2) > 5 ~ Data.Column1
+        str_length(Data.Column2) > 5 ~ Data.Column1,
+      Data.Column1 == "07" ~ Data.Column1
     ),
-    lineExpTerm = case_when(!is.na(lineExpCode) ~ Data.Column2),
-    lineExpCodeLevel1 = case_when(
-      str_detect(Data.Column1, "21|22|23|24") &
-        str_length(Data.Column1) == 2 &
-        str_length(Data.Column2) > 5 ~ Data.Column1
+    lineExpTermLevel1 = case_when(
+      !is.na(lineExpCodeLevel1) ~ Data.Column2,
+      Data.Column1 == "07" ~ Data.Column2
     ),
-    lineExpTermLevel1 = case_when(!is.na(lineExpCodeLevel1) ~ Data.Column2),
     lineExpCodeLevel2 = case_when(
       str_detect(Data.Column1, "21|22|23|24") &
-        str_length(Data.Column1) == 4 ~ Data.Column1
+        str_length(Data.Column1) == 4 ~ Data.Column1,
+      Data.Column1 == "07" ~ Data.Column1
     ),
-    lineExpTermLevel2 = case_when(!is.na(lineExpCodeLevel2) ~ Data.Column2),
+    lineExpTermLevel2 = case_when(
+      !is.na(lineExpCodeLevel2) ~ Data.Column2,
+      Data.Column1 == "07" ~ Data.Column2
+    ),
     lineExpCodeLevel3 = case_when(
       str_detect(Data.Column1, "21|22|23|24") &
-        str_length(Data.Column1) == 6 ~ Data.Column1
+        str_length(Data.Column1) == 6 ~ Data.Column1,
+      Data.Column1 == "07" ~ Data.Column1
     ),
-    lineExpTermLevel3 = case_when(!is.na(lineExpCodeLevel3) ~ Data.Column2),
+    lineExpTermLevel3 = case_when(
+      !is.na(lineExpCodeLevel3) ~ Data.Column2,
+      Data.Column1 == "07" ~ Data.Column2
+    ),
     lineExpCodeLevel4 = case_when(
       str_detect(Data.Column1, "21|22|23|24") &
-        str_length(Data.Column1) == 8 ~ Data.Column1
+        str_length(Data.Column1) == 8 ~ Data.Column1,
+      Data.Column1 == "07" ~ Data.Column1
     ),
-    lineExpTermLevel4 = case_when(!is.na(lineExpCodeLevel4) ~ Data.Column2),
+    lineExpTermLevel4 = case_when(
+      !is.na(lineExpCodeLevel4) ~ Data.Column2,
+      Data.Column1 == "07" ~ Data.Column2
+    ),
     Year = 2021
   )  %>%
   fill(
@@ -197,9 +214,18 @@ check_data__2021_test <- data__2021_test %>%
   summarise(totalAllocation = sum(Amount)) %>%
   pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>%
   replace(is.na(.), 0) %>%
-  mutate(budgetTotal = format((`CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`),
-                              big.mark = ",",
-                              nsmall = 1
+  mutate(budgetTotal = format((
+    `CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST` - `TOTAL RETAINED INDEPENDENT REVENUE`
+  ),
+  big.mark = ",",
+  nsmall = 1
   )) %>%
   view()
-# 
+# sample plot ----------------
+colapse_pres_ <-
+  data__2021_test %>% filter(costCenter_Code == "0111") %>%
+  group_by(costCenter_Code_MDA,
+           table_identifier_MDA,
+           lineExpTermLevel1,
+           lineExpTermLevel2)  %>% summarise(Amount = sum(Amount))
+p_for_plot <- 
