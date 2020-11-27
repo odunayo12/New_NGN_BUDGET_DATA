@@ -12,18 +12,19 @@ Cleaning Nigeria Budget Data
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ------------------------------------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --
+    ## -- Attaching packages -------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --
 
     ## v ggplot2 3.3.2     v purrr   0.3.4
     ## v tibble  3.0.3     v dplyr   1.0.1
     ## v tidyr   1.1.1     v stringr 1.4.0
     ## v readr   1.3.1     v forcats 0.5.0
 
-    ## -- Conflicts ---------------------------------------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ----------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
+library(knitr)
 raw_2021_budget_2021 <-
   read_csv(
     "PDF_Data/raw_2021_budget_2021.csv"
@@ -130,6 +131,152 @@ data__2021_start %>% arrange(Id, Data.Column1)
     ## #   Data.Column6 <chr>, Data.Column7 <chr>, Data.Column8 <chr>,
     ## #   Data.Column9 <chr>, Data.Column10 <chr>
 
-Next the granularity of this dataset lies in the expenses column
-Satrting with 2 and incresing. Our strategy will be to create a new
-cloumn for the desired entries.
+The big question is how do we structure our data so that it can produce
+the same figure, with 0% error tolerance? Let us explore the least units
+of our data. By observation, the records are stored on hierachical
+level; with 48 Ministries Department and Agencies (MDA’s). Under each
+MDA, there are sub-MDA’S. The take-away, however is that for all sub
+divisions their expenditure is made of 2 of these 3 cost elements,
+namely, `CAPITAL EXPENDITURE`, `OTHER RECURRENT COSTS`,`PERSONNEL COST`.
+We shall Explain the reason for the inclusion of `TOTAL RETAINED
+INDEPENDENT REVENUE` later.
+
+``` r
+library(collapsibleTree)
+```
+
+    ## Warning: package 'collapsibleTree' was built under R version 4.0.3
+
+``` r
+data__2021_test =read_csv("Budget_Data/data__2021_test.csv")
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   Year = col_double(),
+    ##   costCenter_Code = col_character(),
+    ##   costCenter_Code_MDA = col_character(),
+    ##   table_identifier = col_character(),
+    ##   table_identifier_MDA = col_character(),
+    ##   lineExpCode = col_character(),
+    ##   lineExpTerm = col_character(),
+    ##   lineExpCodeLevel1 = col_character(),
+    ##   lineExpTermLevel1 = col_character(),
+    ##   lineExpCodeLevel2 = col_character(),
+    ##   lineExpTermLevel2 = col_character(),
+    ##   lineExpCodeLevel3 = col_character(),
+    ##   lineExpTermLevel3 = col_character(),
+    ##   lineExpCodeLevel4 = col_character(),
+    ##   lineExpTermLevel4 = col_character(),
+    ##   Amount = col_double()
+    ## )
+
+``` r
+data__2021_test <- data__2021_test %>% filter(costCenter_Code=="0111") %>% 
+  group_by( costCenter_Code_MDA, table_identifier_MDA, lineExpTermLevel1, lineExpTermLevel2)  %>% 
+  summarise(Amount=sum(Amount))
+```
+
+    ## `summarise()` regrouping output by 'costCenter_Code_MDA', 'table_identifier_MDA', 'lineExpTermLevel1' (override with `.groups` argument)
+
+``` r
+data__2021_test %>% collapsibleTree(c("costCenter_Code_MDA", "table_identifier_MDA", "lineExpTermLevel1"))
+```
+
+<!--html_preserve-->
+
+<div id="htmlwidget-128701b2a0c26f3aa5c0" class="collapsibleTree html-widget" style="width:672px;height:480px;">
+
+</div>
+
+<script type="application/json" data-for="htmlwidget-128701b2a0c26f3aa5c0">{"x":{"data":{"name":".","children":[{"name":"PRESIDENCY","children":[{"name":"BUREAU OF PUBLIC ENTERPRISES (BPE)","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"BUREAU OF PUBLIC PROCUREMENT (BPP)","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"NATIONAL AGRICULTURAL LAND DEVELOPMENT AUTHORITY (NALDA)","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"}]},{"name":"NIGERIA ATOMIC ENERGY COMMISSION & ITS CENTRES","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"NIGERIA EXTRACTIVE INDUSTRIES TRANSPARENCY INITIATIVE (NEITI)","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"NIGERIAN FINANCIAL INTELLIGENCE UNIT (NFIU)","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"NIPSS, KURU","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"OFFICE OF THE CHIEF ECONOMIC ADVISER TO THE PRESIDENT","children":[{"name":"OTHER RECURRENT COSTS"}]},{"name":"OFFICE OF THE CHIEF OF STAFF TO THE PRESIDENT","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"OFFICE OF THE CHIEF SECURITY OFFICER TO THE PRESIDENT","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"STATE HOUSE - HQTRS","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"PERSONNEL COST"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"STATE HOUSE LAGOS LIAISON OFFICE","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"STATE HOUSE MEDICAL CENTRE","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"STATE HOUSE OPERATIONS - PRESIDENT","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]},{"name":"STATE HOUSE OPERATIONS - VICE PRESIDENT","children":[{"name":"CAPITAL EXPENDITURE"},{"name":"OTHER RECURRENT COSTS"},{"name":"TOTAL RETAINED INDEPENDENT REVENUE"}]}]}]},"options":{"hierarchy":["costCenter_Code_MDA","table_identifier_MDA","lineExpTermLevel1"],"input":null,"attribute":"leafCount","linkLength":null,"fontSize":10,"tooltip":false,"collapsed":true,"zoomable":true,"margin":{"top":20,"bottom":20,"left":30,"right":195},"fill":"lightsteelblue"}},"evals":[],"jsHooks":[]}</script>
+
+<!--/html_preserve-->
+
+``` r
+kable(data__2021_test)
+```
+
+| costCenter\_Code\_MDA | table\_identifier\_MDA                                        | lineExpTermLevel1                  | lineExpTermLevel2                  |      Amount |
+| :-------------------- | :------------------------------------------------------------ | :--------------------------------- | :--------------------------------- | ----------: |
+| PRESIDENCY            | BUREAU OF PUBLIC ENTERPRISES (BPE)                            | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |    55229597 |
+| PRESIDENCY            | BUREAU OF PUBLIC ENTERPRISES (BPE)                            | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   113257822 |
+| PRESIDENCY            | BUREAU OF PUBLIC ENTERPRISES (BPE)                            | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   337483139 |
+| PRESIDENCY            | BUREAU OF PUBLIC ENTERPRISES (BPE)                            | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION |   526713164 |
+| PRESIDENCY            | BUREAU OF PUBLIC ENTERPRISES (BPE)                            | PERSONNEL COST                     | SALARY                             |   800909236 |
+| PRESIDENCY            | BUREAU OF PUBLIC ENTERPRISES (BPE)                            | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | BUREAU OF PUBLIC PROCUREMENT (BPP)                            | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   205929069 |
+| PRESIDENCY            | BUREAU OF PUBLIC PROCUREMENT (BPP)                            | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   750059898 |
+| PRESIDENCY            | BUREAU OF PUBLIC PROCUREMENT (BPP)                            | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION |    52091692 |
+| PRESIDENCY            | BUREAU OF PUBLIC PROCUREMENT (BPP)                            | PERSONNEL COST                     | SALARY                             |   427807257 |
+| PRESIDENCY            | BUREAU OF PUBLIC PROCUREMENT (BPP)                            | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)               | CAPITAL EXPENDITURE                | CONSTRUCTION / PROVISION           |   750154314 |
+| PRESIDENCY            | ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)               | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |   816956658 |
+| PRESIDENCY            | ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)               | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   250144397 |
+| PRESIDENCY            | ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)               | CAPITAL EXPENDITURE                | REHABILITATION / REPAIRS           |    36106249 |
+| PRESIDENCY            | ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)               | OTHER RECURRENT COSTS              | OVERHEAD COST                      |  3600773352 |
+| PRESIDENCY            | ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)               | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION | 14574595929 |
+| PRESIDENCY            | ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)               | PERSONNEL COST                     | SALARY                             |  9832964046 |
+| PRESIDENCY            | ECONOMIC AND FINANCIAL CRIMES COMMISSION (EFCC)               | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | NATIONAL AGRICULTURAL LAND DEVELOPMENT AUTHORITY (NALDA)      | CAPITAL EXPENDITURE                | CONSTRUCTION / PROVISION           |  4647647859 |
+| PRESIDENCY            | NATIONAL AGRICULTURAL LAND DEVELOPMENT AUTHORITY (NALDA)      | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |  3330677854 |
+| PRESIDENCY            | NATIONAL AGRICULTURAL LAND DEVELOPMENT AUTHORITY (NALDA)      | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   433298500 |
+| PRESIDENCY            | NATIONAL AGRICULTURAL LAND DEVELOPMENT AUTHORITY (NALDA)      | CAPITAL EXPENDITURE                | REHABILITATION / REPAIRS           |   670375787 |
+| PRESIDENCY            | NATIONAL AGRICULTURAL LAND DEVELOPMENT AUTHORITY (NALDA)      | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   400000000 |
+| PRESIDENCY            | NATIONAL AGRICULTURAL LAND DEVELOPMENT AUTHORITY (NALDA)      | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION |    75765600 |
+| PRESIDENCY            | NATIONAL AGRICULTURAL LAND DEVELOPMENT AUTHORITY (NALDA)      | PERSONNEL COST                     | SALARY                             |   617380882 |
+| PRESIDENCY            | NIGERIA ATOMIC ENERGY COMMISSION & ITS CENTRES                | CAPITAL EXPENDITURE                | CONSTRUCTION / PROVISION           |  1040457710 |
+| PRESIDENCY            | NIGERIA ATOMIC ENERGY COMMISSION & ITS CENTRES                | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   270000000 |
+| PRESIDENCY            | NIGERIA ATOMIC ENERGY COMMISSION & ITS CENTRES                | OTHER RECURRENT COSTS              | GRANTS AND CONTRIBUTIONS           |    75000000 |
+| PRESIDENCY            | NIGERIA ATOMIC ENERGY COMMISSION & ITS CENTRES                | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   289975915 |
+| PRESIDENCY            | NIGERIA ATOMIC ENERGY COMMISSION & ITS CENTRES                | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION |   142294086 |
+| PRESIDENCY            | NIGERIA ATOMIC ENERGY COMMISSION & ITS CENTRES                | PERSONNEL COST                     | SALARY                             |  1145586412 |
+| PRESIDENCY            | NIGERIA ATOMIC ENERGY COMMISSION & ITS CENTRES                | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | NIGERIA EXTRACTIVE INDUSTRIES TRANSPARENCY INITIATIVE (NEITI) | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |   133416489 |
+| PRESIDENCY            | NIGERIA EXTRACTIVE INDUSTRIES TRANSPARENCY INITIATIVE (NEITI) | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   241000000 |
+| PRESIDENCY            | NIGERIA EXTRACTIVE INDUSTRIES TRANSPARENCY INITIATIVE (NEITI) | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   327314427 |
+| PRESIDENCY            | NIGERIA EXTRACTIVE INDUSTRIES TRANSPARENCY INITIATIVE (NEITI) | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION |    87005288 |
+| PRESIDENCY            | NIGERIA EXTRACTIVE INDUSTRIES TRANSPARENCY INITIATIVE (NEITI) | PERSONNEL COST                     | SALARY                             |   729322864 |
+| PRESIDENCY            | NIGERIA EXTRACTIVE INDUSTRIES TRANSPARENCY INITIATIVE (NEITI) | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | NIGERIAN FINANCIAL INTELLIGENCE UNIT (NFIU)                   | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |   100556531 |
+| PRESIDENCY            | NIGERIAN FINANCIAL INTELLIGENCE UNIT (NFIU)                   | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   284000000 |
+| PRESIDENCY            | NIGERIAN FINANCIAL INTELLIGENCE UNIT (NFIU)                   | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   900000000 |
+| PRESIDENCY            | NIGERIAN FINANCIAL INTELLIGENCE UNIT (NFIU)                   | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION |   315020138 |
+| PRESIDENCY            | NIGERIAN FINANCIAL INTELLIGENCE UNIT (NFIU)                   | PERSONNEL COST                     | SALARY                             |  2580161100 |
+| PRESIDENCY            | NIGERIAN FINANCIAL INTELLIGENCE UNIT (NFIU)                   | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | NIPSS, KURU                                                   | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   232454417 |
+| PRESIDENCY            | NIPSS, KURU                                                   | CAPITAL EXPENDITURE                | REHABILITATION / REPAIRS           |    85799598 |
+| PRESIDENCY            | NIPSS, KURU                                                   | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   813250740 |
+| PRESIDENCY            | NIPSS, KURU                                                   | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION |    86758748 |
+| PRESIDENCY            | NIPSS, KURU                                                   | PERSONNEL COST                     | SALARY                             |   677148497 |
+| PRESIDENCY            | NIPSS, KURU                                                   | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | OFFICE OF THE CHIEF ECONOMIC ADVISER TO THE PRESIDENT         | OTHER RECURRENT COSTS              | OVERHEAD COST                      |    46864446 |
+| PRESIDENCY            | OFFICE OF THE CHIEF OF STAFF TO THE PRESIDENT                 | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |    56162473 |
+| PRESIDENCY            | OFFICE OF THE CHIEF OF STAFF TO THE PRESIDENT                 | OTHER RECURRENT COSTS              | OVERHEAD COST                      |    20391700 |
+| PRESIDENCY            | OFFICE OF THE CHIEF OF STAFF TO THE PRESIDENT                 | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | OFFICE OF THE CHIEF SECURITY OFFICER TO THE PRESIDENT         | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |   280812366 |
+| PRESIDENCY            | OFFICE OF THE CHIEF SECURITY OFFICER TO THE PRESIDENT         | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   111359316 |
+| PRESIDENCY            | OFFICE OF THE CHIEF SECURITY OFFICER TO THE PRESIDENT         | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | CAPITAL EXPENDITURE                | CONSTRUCTION / PROVISION           |  1516000000 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |   664595768 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |    98403244 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | CAPITAL EXPENDITURE                | PRESERVATION OF THE ENVIRONMENT    |    51465982 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | CAPITAL EXPENDITURE                | REHABILITATION / REPAIRS           |  5397720503 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | OTHER RECURRENT COSTS              | OVERHEAD COST                      |  2860063433 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | PERSONNEL COST                     | ALLOWANCES AND SOCIAL CONTRIBUTION |   569281967 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | PERSONNEL COST                     | SALARY                             |  1148538933 |
+| PRESIDENCY            | STATE HOUSE - HQTRS                                           | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | STATE HOUSE LAGOS LIAISON OFFICE                              | CAPITAL EXPENDITURE                | REHABILITATION / REPAIRS           |   236115792 |
+| PRESIDENCY            | STATE HOUSE LAGOS LIAISON OFFICE                              | OTHER RECURRENT COSTS              | OVERHEAD COST                      |    95280402 |
+| PRESIDENCY            | STATE HOUSE LAGOS LIAISON OFFICE                              | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | STATE HOUSE MEDICAL CENTRE                                    | CAPITAL EXPENDITURE                | CONSTRUCTION / PROVISION           |   123726387 |
+| PRESIDENCY            | STATE HOUSE MEDICAL CENTRE                                    | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |   231969277 |
+| PRESIDENCY            | STATE HOUSE MEDICAL CENTRE                                    | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   331730212 |
+| PRESIDENCY            | STATE HOUSE MEDICAL CENTRE                                    | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | STATE HOUSE OPERATIONS - PRESIDENT                            | CAPITAL EXPENDITURE                | CONSTRUCTION / PROVISION           |  1374416489 |
+| PRESIDENCY            | STATE HOUSE OPERATIONS - PRESIDENT                            | OTHER RECURRENT COSTS              | OVERHEAD COST                      |  2761041923 |
+| PRESIDENCY            | STATE HOUSE OPERATIONS - PRESIDENT                            | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |
+| PRESIDENCY            | STATE HOUSE OPERATIONS - VICE PRESIDENT                       | CAPITAL EXPENDITURE                | FIXED ASSETS PURCHASED             |    19302720 |
+| PRESIDENCY            | STATE HOUSE OPERATIONS - VICE PRESIDENT                       | CAPITAL EXPENDITURE                | OTHER CAPITAL PROJECTS             |   111743051 |
+| PRESIDENCY            | STATE HOUSE OPERATIONS - VICE PRESIDENT                       | OTHER RECURRENT COSTS              | OVERHEAD COST                      |   948618094 |
+| PRESIDENCY            | STATE HOUSE OPERATIONS - VICE PRESIDENT                       | TOTAL RETAINED INDEPENDENT REVENUE | TOTAL RETAINED INDEPENDENT REVENUE |           0 |

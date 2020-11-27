@@ -1,6 +1,7 @@
 ---
 title: "Cleaning Nigeria Budget Data"
 output: github_document
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -20,6 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ##Read the data
 ```{r , echo=T}
 library(tidyverse)
+library(knitr)
 raw_2021_budget_2021 <-
   read_csv(
     "PDF_Data/raw_2021_budget_2021.csv"
@@ -47,5 +49,15 @@ When extracting the tables form Excel, the `Id`, `Name` and `Kind` Columns were 
 data__2021_start %>% arrange(Id, Data.Column1)
 ```
 
-Next the granularity of this dataset lies in the expenses column Satrting with 2 and incresing. Our strategy will be to create a new cloumn for the desired entries.
+The big question is how do we structure our data so that it can produce the same figure, with 0% error tolerance?
+Let us explore the least units of our data. By observation, the records are stored on hierachical level; with 48 Ministries Department and Agencies (MDA's). Under each MDA, there are sub-MDA'S. The take-away, however is that for all sub divisions their expenditure is made of 2 of these 3 cost elements, namely, `CAPITAL EXPENDITURE`, `OTHER RECURRENT COSTS`,`PERSONNEL COST`. We shall Explain the reason for the inclusion of `TOTAL RETAINED INDEPENDENT REVENUE` later.
+```{r}
+library(collapsibleTree)
+data__2021_test =read_csv("Budget_Data/data__2021_test.csv")
+data__2021_test <- data__2021_test %>% filter(costCenter_Code=="0111") %>% 
+  group_by( costCenter_Code_MDA, table_identifier_MDA, lineExpTermLevel1, lineExpTermLevel2)  %>% 
+  summarise(Amount=sum(Amount))
+data__2021_test %>% collapsibleTree(c("costCenter_Code_MDA", "table_identifier_MDA", "lineExpTermLevel1"))
+kable(data__2021_test)
+```
 
