@@ -228,4 +228,6 @@ colapse_pres_ <-
            table_identifier_MDA,
            lineExpTermLevel1,
            lineExpTermLevel2)  %>% summarise(Amount = sum(Amount))
-p_for_plot <- 
+
+write_csv(data__2021_test,
+          "Budget_Data/data__2021_test.csv")
