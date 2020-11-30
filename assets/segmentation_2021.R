@@ -203,7 +203,7 @@ anomally <- data__2021_test %>%
          lineExpTermLevel4,
          lineExpCode,
          Amount) %>%
-  filter(str_detect(table_identifier, "^01610")) %>%
+  filter(str_detect(table_identifier, "^0517")) %>%
   group_by(table_identifier, table_identifier_MDA) %>%
   summarise(sum(Amount)) %>%
   view()
