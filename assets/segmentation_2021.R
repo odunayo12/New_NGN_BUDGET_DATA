@@ -105,67 +105,85 @@ MDA_Table_2021 <- data__2021_start %>%
 
 
 # Cleaning ----------------------------------------------
-#
+# Some entries of "TOTAL RETAINED" are contained in Column
 data__2021_test <- data__2021_start %>%
   select(-(Id:Kind), -(Data.Column4:Data.Column10)) %>%
+  transmute(
+    Data.Column3.1 = if_else(
+      str_detect(Data.Column1, "TOTAL RETAINED") &
+        is.na(Data.Column3),
+      Data.Column2,
+      Data.Column3
+    ),
+    Data.Column2.1 = if_else(
+      str_detect(Data.Column1, "TOTAL RETAINED") &
+        is.na(Data.Column3),
+      Data.Column1,
+      Data.Column2
+    ),
+    Data.Column1.1 = if_else(
+      str_detect(Data.Column2.1, "TOTAL RETAINED"),
+      "07",
+      Data.Column1
+    )
+  ) %>%
   mutate(
-    Data.Column1 = if_else(str_detect(Data.Column2, "TOTAL RETAINED"), "07", Data.Column1),
     table_identifier = case_when(
       #dectects any figure from 0-9 in a column
-      str_detect(Data.Column1, "^[0-9]") &
-        str_length(Data.Column1) == 10
-      ~  Data.Column1
+      str_detect(Data.Column1.1, "^[0-9]") &
+        str_length(Data.Column1.1) == 10
+      ~  Data.Column1.1
     ),
-    table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2)
-  ) %>% fill(table_identifier, table_identifier_MDA) %>%
+    table_identifier_MDA = case_when(!is.na(table_identifier) ~ Data.Column2.1)
+  ) %>% fill(table_identifier, table_identifier_MDA) %>% #view() #%>%
   mutate(
     Code = str_sub(table_identifier, end = 4),
     lineExpCode = case_when(
-      Data.Column1 == "2" &
-        str_detect(Data.Column2, "^EXP{1}") |
-        Data.Column1 == "07" &
-        str_detect(Data.Column2, "TOTAL RETAINED") ~ Data.Column1
+      Data.Column1.1 == "2" &
+        str_detect(Data.Column2.1, "^EXP{1}") |
+        Data.Column1.1 == "07" &
+        str_detect(Data.Column2.1, "TOTAL RETAINED") ~ Data.Column1.1
     ),
     lineExpTerm = case_when(
-      !is.na(lineExpCode) ~ Data.Column2,
-      Data.Column1 == "07" ~ Data.Column2
+      !is.na(lineExpCode) ~ Data.Column2.1,
+      Data.Column1.1 == "07" ~ Data.Column2.1
     ),
     lineExpCodeLevel1 = case_when(
-      str_detect(Data.Column1, "21|22|23|24") &
-        str_length(Data.Column1) == 2 &
-        str_length(Data.Column2) > 5 ~ Data.Column1,
-      Data.Column1 == "07" ~ Data.Column1
+      str_detect(Data.Column1.1, "21|22|23|24") &
+        str_length(Data.Column1.1) == 2 &
+        str_length(Data.Column2.1) > 5 ~ Data.Column1.1,
+      Data.Column1.1 == "07" ~ Data.Column1.1
     ),
     lineExpTermLevel1 = case_when(
-      !is.na(lineExpCodeLevel1) ~ Data.Column2,
-      Data.Column1 == "07" ~ Data.Column2
+      !is.na(lineExpCodeLevel1) ~ Data.Column2.1,
+      Data.Column1.1 == "07" ~ Data.Column2.1
     ),
     lineExpCodeLevel2 = case_when(
-      str_detect(Data.Column1, "21|22|23|24") &
-        str_length(Data.Column1) == 4 ~ Data.Column1,
-      Data.Column1 == "07" ~ Data.Column1
+      str_detect(Data.Column1.1, "21|22|23|24") &
+        str_length(Data.Column1.1) == 4 ~ Data.Column1.1,
+      Data.Column1.1 == "07" ~ Data.Column1.1
     ),
     lineExpTermLevel2 = case_when(
-      !is.na(lineExpCodeLevel2) ~ Data.Column2,
-      Data.Column1 == "07" ~ Data.Column2
+      !is.na(lineExpCodeLevel2) ~ Data.Column2.1,
+      Data.Column1.1 == "07" ~ Data.Column2.1
     ),
     lineExpCodeLevel3 = case_when(
-      str_detect(Data.Column1, "21|22|23|24") &
-        str_length(Data.Column1) == 6 ~ Data.Column1,
-      Data.Column1 == "07" ~ Data.Column1
+      str_detect(Data.Column1.1, "21|22|23|24") &
+        str_length(Data.Column1.1) == 6 ~ Data.Column1.1,
+      Data.Column1.1 == "07" ~ Data.Column1.1
     ),
     lineExpTermLevel3 = case_when(
-      !is.na(lineExpCodeLevel3) ~ Data.Column2,
-      Data.Column1 == "07" ~ Data.Column2
+      !is.na(lineExpCodeLevel3) ~ Data.Column2.1,
+      Data.Column1.1 == "07" ~ Data.Column2.1
     ),
     lineExpCodeLevel4 = case_when(
-      str_detect(Data.Column1, "21|22|23|24") &
-        str_length(Data.Column1) == 8 ~ Data.Column1,
-      Data.Column1 == "07" ~ Data.Column1
+      str_detect(Data.Column1.1, "21|22|23|24") &
+        str_length(Data.Column1.1) == 8 ~ Data.Column1.1,
+      Data.Column1.1 == "07" ~ Data.Column1.1
     ),
     lineExpTermLevel4 = case_when(
-      !is.na(lineExpCodeLevel4) ~ Data.Column2,
-      Data.Column1 == "07" ~ Data.Column2
+      !is.na(lineExpCodeLevel4) ~ Data.Column2.1,
+      Data.Column1.1 == "07" ~ Data.Column2.1
     ),
     Year = 2021
   )  %>%
@@ -183,7 +201,11 @@ data__2021_test <- data__2021_start %>%
   left_join(MDA_Table_2021) %>%
   rename(costCenter_Code = Code,
          costCenter_Code_MDA = MDA) %>%
-  mutate(Amount = as.numeric(str_replace_all(Data.Column3, ",", ""))) %>%
+  mutate(Amount = if_else(
+    Data.Column1.1 == "07",
+    -1 * as.numeric(str_replace_all(Data.Column3.1, ",", "")),
+    as.numeric(str_replace_all(Data.Column3.1, ",", ""))
+  )) %>%
   select(
     Year,
     costCenter_Code,
@@ -196,15 +218,6 @@ data__2021_test <- data__2021_start %>%
   view()
 
 # Check for anomaly-------------------
-# TODO: create a column to track retained Earnings
-# RIR
-# JOINT ADMISSIONS MATRICULATION BOARD 9,876,351,850
-# NATIONAL EXAMINATIONS COUNCIL 10,129,415,224
-# NATIONAL BUSINESS AND TECHNICAL EDUCATION BOARD 1,476,428,693
-# TEACHERS REGISTRATION COUNCIL OF NIGERIA 1,118,153,126
-# FEDERAL POLYTECHNIC BAUCHI 436,000,000
-# FEDERAL POLYTECHNIC BIDA 1,545,129,507
-# FEDERAL POLYTECHNIC IDAH 447,500,000
 anomally <- data__2021_test %>%
   select(table_identifier,
          table_identifier_MDA,
@@ -222,12 +235,35 @@ check_data__2021_test <- data__2021_test %>%
   summarise(totalAllocation = sum(Amount)) %>%
   pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>%
   replace(is.na(.), 0) %>%
-  mutate(budgetTotal = format((
-    `CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST` - `TOTAL RETAINED INDEPENDENT REVENUE`
-  ),
-  big.mark = ",",
-  nsmall = 1
-  )) %>%
+  # mutate(budgetTotal = format((
+  #   `CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST` + `TOTAL RETAINED INDEPENDENT REVENUE`
+  # ),
+  # big.mark = ",",
+  # nsmall = 1)) %>% ungroup() %>% select(costCenter_Code_MDA, budgetTotal) %>%
+  mutate(
+    budgetTotal = `CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST` + `TOTAL RETAINED INDEPENDENT REVENUE`
+  ) %>% view()
+# check missing----------------------------
+missing_data__2021_test <- data__2021_test %>%
+  filter(str_detect(table_identifier, "^0521")) %>%
+  group_by(table_identifier, table_identifier_MDA, lineExpTermLevel1) %>%
+  #group_by(costCenter_Code, costCenter_Code_MDA, lineExpTermLevel1) %>%
+  summarise(totalAllocation = sum(Amount)) %>%
+  pivot_wider(names_from = lineExpTermLevel1, values_from = totalAllocation) %>%
+  replace(is.na(.), 0) %>%
+  mutate(
+    budgetTotal = format((
+      `CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST` + `TOTAL RETAINED INDEPENDENT REVENUE`
+    ),
+    big.mark = ",",
+    nsmall = 1
+    ),
+    anomally_ = format((`CAPITAL EXPENDITURE` + `OTHER RECURRENT COSTS` + `PERSONNEL COST`),
+                       big.mark = ",",
+                       nsmall = 1
+    )
+  ) %>%
+  # filter(budgetTotal != anomally_) %>%
   view()
 # sample plot ----------------
 colapse_pres_ <-
@@ -236,6 +272,10 @@ colapse_pres_ <-
            table_identifier_MDA,
            lineExpTermLevel1,
            lineExpTermLevel2)  %>% summarise(Amount = sum(Amount))
-
+## save data as CSV
 write_csv(data__2021_test,
           "Budget_Data/data__2021_test.csv")
+
+write_csv(data__2021_test, "Budget_Data/budget_2021.csv")
+write_csv(check_data__2021_test,
+          "Budget_Data/summary/2021_summary_by_MDA.csv")
