@@ -1,3 +1,4 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/odunayo12/new_ngn_budget_data/badge)](https://www.codefactor.io/repository/github/odunayo12/new_ngn_budget_data)
 # New_NGN_BUDGET_DATA
 This repo consists of Nigerian Budget Data for data accessible period.
 
